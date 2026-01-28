@@ -1,30 +1,22 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Flame, BarChart3, Trophy, GraduationCap, Star } from "lucide-react";
+import TypewriterWords from "./TypewriterWords";
 
 const HeroPage = () => {
   const features = [
-    {
-      name: "Streaks",
-      description: "Track your progress",
-      icon: Flame,
-    },
-    {
-      name: "Statistics",
-      description: "Beautiful graphs coming soon!",
-      icon: BarChart3,
-    },
-    {
-      name: "Motivating",
-      description: "Badges and streaks!",
-      icon: Trophy,
-    },
-    {
-      name: "Test Helper",
-      description: "Assist with tests!",
-      icon: GraduationCap,
-    },
+    { name: "Streaks", description: "Track your progress", icon: Flame },
+    { name: "Statistics", description: "Beautiful graphs coming soon!", icon: BarChart3 },
+    { name: "Motivating", description: "Badges and streaks!", icon: Trophy },
+    { name: "Test Helper", description: "Assist with tests!", icon: GraduationCap },
+  ];
+
+  const wordBank = [
+    "unrivaled", "greatest", "finest", "optimal", "premier",
+    "leading", "elite", "superior", "prime", "preeminent",
   ];
 
   return (
@@ -37,9 +29,17 @@ const HeroPage = () => {
               <Star className="w-4 h-4" />
               Study smarter, not harder
             </p>
-
+            {/* Title */}
             <h1 className="mt-5 text-4xl sm:text-5xl font-semibold tracking-tight leading-tight">
-              The easy, modern way to track your studying
+              The{" "}
+              <TypewriterWords
+                words={wordBank}
+                className="text-blue-600 font-semibold"
+                typingSpeedMs={70}
+                deletingSpeedMs={45}
+                pauseMs={900}
+              />{" "}
+              <br /> way to track your studying
             </h1>
 
             <h2 className="mt-4 text-lg sm:text-xl text-zinc-600 leading-relaxed">
@@ -48,15 +48,11 @@ const HeroPage = () => {
 
             <p className="mt-6 text-zinc-700 leading-relaxed">
               <span className="font-semibold text-zinc-900">
-                Study Smart is a simple, powerful study tracker built for
-                students who want clarity and consistency
+                Study Smart is a simple, powerful study tracker built for students who want clarity and consistency
               </span>
-              . Track your study sessions with precision, review your progress
-              in real time, and understand exactly where your time is going.
-              Stay motivated with streaks, goals, and habit tracking designed to
-              help you build better study routines over time. Everything is
-              brought together in one intuitive dashboard, so you can focus less
-              on planning and more on actually getting work done.
+              . Track your study sessions with precision, review your progress in real time, and understand exactly where your time is going.
+              Stay motivated with streaks, goals, and habit tracking designed to help you build better study routines over time.
+              Everything is brought together in one intuitive dashboard, so you can focus less on planning and more on actually getting work done.
             </p>
 
             {/* feature chips */}
@@ -72,37 +68,28 @@ const HeroPage = () => {
                     className="rounded-xl border border-zinc-200 bg-white/70 p-3 hover:bg-white transition"
                   >
                     <div className="flex items-start gap-3">
-                      {/* Icon */}
                       <Icon className="w-5 h-5 text-[#2563EB] mt-0.5" />
-
-                      {/* Text */}
                       <div className="flex flex-col">
-                        <span className="font-medium text-zinc-900">
-                          {feature.name}
-                        </span>
-                        <span className="text-sm text-zinc-600">
-                          {feature.description}
-                        </span>
+                        <span className="font-medium text-zinc-900">{feature.name}</span>
+                        <span className="text-sm text-zinc-600">{feature.description}</span>
                       </div>
                     </div>
                   </Link>
                 );
               })}
             </div>
-            {/* Free Trial Button */}
+
             <Link
               href="/signup"
               className="
                 inline-flex items-center justify-center
                 rounded-xl px-6 py-3
                 text-sm font-semibold text-white
-               bg-blue-600
-                shadow-sm
-                transition-all
-              hover:bg-blue-700 hover:shadow-md
+                bg-blue-600 shadow-sm transition-all
+                hover:bg-blue-700 hover:shadow-md
                 active:scale-[0.98]
                 focus:outline-none focus:ring-2 focus:ring-blue-500/50 mt-7
-                "
+              "
             >
               Get started →
             </Link>
@@ -122,6 +109,7 @@ const HeroPage = () => {
               />
             </div>
           </div>
+
         </div>
       </div>
     </section>
