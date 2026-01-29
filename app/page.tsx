@@ -1,5 +1,3 @@
-import Image from 'next/image'
-import React from 'react'
 import HeroPage from './components/Hero'
 import TrustedByPage from './components/TrustedBy'
 import AboutUsPage from './components/AboutUs'
@@ -15,9 +13,8 @@ const HomePage = () => {
       <TrustedByPage />
       <AboutUsPage />
       <GetStartedPage />
+      <TryForFree />      
       <FAQPage />
-      <TryForFree />
-
       <FooterPage />
     </div>
   )

@@ -1,12 +1,10 @@
-import NextAuth, { type DefaultSession, type NextAuthOptions } from "next-auth";
-import { env } from "@/app/env"
+import { type DefaultSession, type NextAuthOptions } from "next-auth";
+import { env } from "@/app/env";
 import { prisma } from "@/app/server/db";
 import bcrypt from "bcryptjs";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginSchema } from "@/app/validation/auth";
-/**
- * Module augmentation for `next-auth` types to add custom properties to the `session` object.
- */
+
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
@@ -14,18 +12,9 @@ declare module "next-auth" {
       isAdmin: boolean;
     };
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
 
-const AdminEmails = [
-  "example12@gmail.com",
-  "example123@gmail.com",
-  // Add more admin emails here as needed
-];
+const AdminEmails = ["example12@gmail.com", "example123@gmail.com"];
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
@@ -33,14 +22,14 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.email = user.email!;
-        token.isAdmin = AdminEmails.includes(token.email); // Assigns `isAdmin` based on email
+        token.isAdmin = AdminEmails.includes(token.email);
       }
       return token;
     },
     session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
-        session.user.isAdmin = token.isAdmin as boolean; // Ensures admin status is in the session
+        session.user.isAdmin = token.isAdmin as boolean;
       }
       return session;
     },
@@ -48,8 +37,6 @@ export const authOptions: NextAuthOptions = {
   secret: env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/signin",
-    newUser: "/signup",
-    error: "/signin",
   },
   providers: [
     CredentialsProvider({
@@ -61,24 +48,17 @@ export const authOptions: NextAuthOptions = {
       authorize: async (credentials) => {
         const cred = await loginSchema.parseAsync(credentials);
 
-        // Find user in the database
         const user = await prisma.user.findFirst({
           where: { email: cred.email },
         });
 
         if (!user) return null;
 
-        // Verify password
         const isValidPassword = bcrypt.compareSync(cred.password, user.password);
         if (!isValidPassword) return null;
 
-        return {
-          id: user.id,
-          email: user.email,
-        };
+        return { id: user.id, email: user.email };
       },
     }),
   ],
 };
-
-export default NextAuth(authOptions);

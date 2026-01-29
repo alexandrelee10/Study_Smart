@@ -1,17 +1,23 @@
 import { PrismaClient } from "@prisma/client";
-
-import { env } from '@/app/env'
-
-const createPrismaClient = () =>
-  new PrismaClient({
-    log:
-      env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-  });
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
+import { env } from "@/app/env"; // adjust if your env import path differs
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: ReturnType<typeof createPrismaClient> | undefined;
+  prisma: PrismaClient | undefined;
 };
 
-export const db = globalForPrisma.prisma ?? createPrismaClient();
+const pool = new Pool({
+  connectionString: env.DATABASE_URL,
+});
 
-if (env.NODE_ENV !== "production") globalForPrisma.prisma = db;
+const adapter = new PrismaPg(pool);
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    adapter,
+    log: env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+  });
+
+if (env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

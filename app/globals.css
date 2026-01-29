@@ -24,3 +24,7 @@ body {
 .animate-wordSwap {
   animation: wordSwap 1.8s ease-in-out infinite;
 }
+
+html {
+  scroll-behavior: smooth;
+}

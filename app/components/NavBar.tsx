@@ -53,17 +53,38 @@ const NavBar = () => {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className={`text-sm font-medium transition ${
-                      isActive
-                        ? "text-orange-400"
-                        : "text-zinc-700 hover:text-blue-600"
-                    }`}
+                    className={`text-sm font-medium transition ${isActive
+                      ? "text-orange-400"
+                      : "text-zinc-700 hover:text-blue-600"
+                      }`}
                   >
                     {link.name}
                   </Link>
                 </li>
               );
             })}
+            {/* Desktop Sign In */}
+            <Link
+              href="/signin"
+              className="hidden md:inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-zinc-700 hover:text-blue-600 hover:bg-black/5 transition"
+            >
+              {/* Icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                <path d="M14 14s-1-4-6-4-6 4-6 4 1 1 6 1 6-1 6-1z" />
+              </svg>
+
+              Sign in
+            </Link>
+
+            
+
           </ul>
 
           {/* Mobile Hamburger */}
@@ -81,24 +102,21 @@ const NavBar = () => {
 
       {/* Mobile Overlay */}
       <div
-        className={`md:hidden fixed inset-0 z-[60] transition ${
-          mobileOpen ? "pointer-events-auto" : "pointer-events-none"
-        }`}
+        className={`md:hidden fixed inset-0 z-[60] transition ${mobileOpen ? "pointer-events-auto" : "pointer-events-none"
+          }`}
         aria-hidden={!mobileOpen}
       >
         {/* Backdrop */}
         <div
-          className={`absolute inset-0 bg-black/40 transition-opacity ${
-            mobileOpen ? "opacity-100" : "opacity-0"
-          }`}
+          className={`absolute inset-0 bg-black/40 transition-opacity ${mobileOpen ? "opacity-100" : "opacity-0"
+            }`}
           onClick={() => setMobileOpen(false)}
         />
 
         {/* Panel */}
         <div
-          className={`absolute right-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl transition-transform ${
-            mobileOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+          className={`absolute right-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl transition-transform ${mobileOpen ? "translate-x-0" : "translate-x-full"
+            }`}
           role="dialog"
           aria-modal="true"
         >
@@ -122,11 +140,10 @@ const NavBar = () => {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className={`block rounded-xl px-4 py-3 text-base font-medium transition ${
-                        isActive
-                          ? "bg-orange-50 text-orange-500"
-                          : "text-zinc-800 hover:bg-black/5"
-                      }`}
+                      className={`block rounded-xl px-4 py-3 text-base font-medium transition ${isActive
+                        ? "bg-orange-50 text-orange-500"
+                        : "text-zinc-800 hover:bg-black/5"
+                        }`}
                       onClick={() => setMobileOpen(false)}
                     >
                       {link.name}
@@ -134,6 +151,28 @@ const NavBar = () => {
                   </li>
                 );
               })}
+              {/* Sign In (Mobile) */}
+              <div className="mt-4">
+                <Link
+                  href="/signin"
+                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-zinc-800 hover:bg-black/5 transition"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                    <path d="M14 14s-1-4-6-4-6 4-6 4 1 1 6 1 6-1 6-1z" />
+                  </svg>
+
+                  Sign in
+                </Link>
+              </div>
+
             </ul>
 
             {/* Optional: CTA */}
