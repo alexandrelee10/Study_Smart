@@ -10,7 +10,7 @@ const TrustedByPage = () => {
         <h3 className="font-light text-zinc-600 text-sm tracking-wide">
           TRUSTED BY STUDENTS WORLDWIDE
         </h3>
-        <h2 className="text-4xl font-bold mt-2 pb-20">Your success in numbers!</h2>
+        <h2 className="text-4xl font-bold mt-2 pb-15">Your success in numbers!</h2>
 
         {/* Cards */}
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
