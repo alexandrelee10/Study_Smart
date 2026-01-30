@@ -1,24 +1,22 @@
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import type { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/app/lib/prisma";
 import bcrypt from "bcryptjs";
+import { prisma } from "@/app/lib/prisma";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
 
   providers: [
-    Credentials({
+    CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const email = String(credentials?.email || "")
-          .toLowerCase()
-          .trim();
+        const email = String(credentials?.email || "").toLowerCase().trim();
         const password = String(credentials?.password || "");
 
         if (!email || !password) return null;
@@ -29,30 +27,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const ok = await bcrypt.compare(password, user.password);
         if (!ok) return null;
 
+        // ✅ include username + image so UI can show it
         return {
           id: user.id,
           email: user.email,
-          username: user.username,
+          name: user.username,          // we’ll use name as username for now
           image: user.image ?? null,
         };
       },
     }),
   ],
-
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.username = (user as any).username;
-        token.image = (user as any).image ?? null;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.username = token.username as string;
-        session.user.image = token.image as string | null;
-      }
-      return session;
-    },
-  },
-});
+};

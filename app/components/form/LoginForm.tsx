@@ -40,7 +40,7 @@ const LoginForm = () => {
     }
 
     // ✅ Success
-    window.location.href = "/components/dashboard";
+    window.location.href = "/dashboard";
   }
 
   return (
