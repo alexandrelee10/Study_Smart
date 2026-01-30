@@ -2,68 +2,38 @@
 
 import bcrypt from "bcryptjs";
 import { prisma } from "@/app/lib/prisma";
-import { redirect } from "next/navigation";
 
-function slugifyUsername(input: string) {
-  return input
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "")
-    .slice(0, 18);
-}
-
-export async function signup(formData: FormData) {
+export async function signup(_: any, formData: FormData) {
   const firstName = String(formData.get("firstName") ?? "").trim();
   const lastName = String(formData.get("lastName") ?? "").trim();
+  const username = String(formData.get("username") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
-  // ✅ required fields
-  if (!firstName || !lastName) {
-    return { error: "First and last name are required." };
+  if (!firstName || !lastName || !username || !email || !password) {
+    return { ok: false, error: "Please fill out all required fields." };
   }
-  if (!email || !password) {
-    return { error: "Email and password are required." };
+  if (password.length < 8) {
+    return { ok: false, error: "Password must be at least 8 characters." };
   }
-  if (password.length < 6) {
-    return { error: "Password must be at least 6 characters." };
-  }
-
-  // ✅ unique email check
-  const exists = await prisma.user.findUnique({ where: { email } });
-  if (exists) {
-    return { error: "An account with that email already exists." };
+  if (password !== confirmPassword) {
+    return { ok: false, error: "Passwords do not match." };
   }
 
-  // ✅ generate a unique username (since your schema requires it)
-  const base = slugifyUsername(`${firstName}${lastName}`) || "user";
-  let username = base;
+  // unique checks
+  const emailExists = await prisma.user.findUnique({ where: { email } });
+  if (emailExists) return { ok: false, error: "Email already in use." };
 
-  // try a few times to avoid collisions
-  for (let i = 0; i < 5; i++) {
-    const taken = await prisma.user.findUnique({ where: { username } });
-    if (!taken) break;
-    username = `${base}${Math.floor(1000 + Math.random() * 9000)}`; // user1234
-  }
-
-  // final safety: if still taken, bail
-  const stillTaken = await prisma.user.findUnique({ where: { username } });
-  if (stillTaken) {
-    return { error: "Please try again (username collision)." };
-  }
+  const usernameExists = await prisma.user.findUnique({ where: { username } });
+  if (usernameExists) return { ok: false, error: "Username already taken." };
 
   const hashed = await bcrypt.hash(password, 10);
 
   await prisma.user.create({
-    data: {
-      username,
-      firstName,
-      lastName,
-      email,
-      password: hashed,
-      // role defaults to STUDENT in schema, no need to set
-    },
+    data: { firstName, lastName, username, email, password: hashed },
   });
 
-  redirect("/signin?created=1");
+  // ✅ return creds so client can sign in immediately
+  return { ok: true, email, password };
 }

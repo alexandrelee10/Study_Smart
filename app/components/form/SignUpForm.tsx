@@ -1,12 +1,50 @@
 "use client";
 
+import React, { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import study from "@/public/assets/signin/study.png";
 import owlLogo from "@/public/owl.png";
 import { signup } from "@/app/signup/actions";
+import { signIn } from "next-auth/react";
+
+type SignupState =
+  | { ok: false; error?: string }
+  | { ok: true; email: string; password: string }
+  | null;
+
+const initialState: SignupState = null;
 
 export default function SignupForm() {
+  const [state, formAction] = useActionState(signup as any, initialState);
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Auto-login + redirect after successful signup
+  useEffect(() => {
+    if (!state || state.ok !== true) return;
+
+    const run = async () => {
+      setLoading(true);
+
+      const res = await signIn("credentials", {
+        email: state.email,
+        password: state.password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        setLoading(false);
+        // fallback if login fails for any reason
+        window.location.href = "/signin?created=1";
+        return;
+      }
+
+      window.location.href = "/dashboard";
+    };
+
+    run();
+  }, [state]);
+
   return (
     <section className="relative isolate min-h-screen flex items-center justify-center pt-25">
       {/* Background Image (stable stacking, no flashing) */}
@@ -50,7 +88,21 @@ export default function SignupForm() {
           Start tracking your study progress
         </p>
 
-        <form action={signup} className="space-y-4">
+        {/* ✅ Error (minimal visual addition) */}
+        {state && state.ok === false && state.error && (
+          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {state.error}
+          </div>
+        )}
+
+        {/* ✅ Loading message (minimal visual addition) */}
+        {loading && (
+          <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+            Creating your account… signing you in…
+          </div>
+        )}
+
+        <form action={formAction} className="space-y-4">
           {/* Name row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -61,6 +113,7 @@ export default function SignupForm() {
                 name="firstName"
                 required
                 placeholder="John"
+                disabled={loading}
                 className="
                   w-full rounded-xl px-4 py-2
                   border border-gray-300 bg-white text-gray-900
@@ -79,6 +132,7 @@ export default function SignupForm() {
                 name="lastName"
                 required
                 placeholder="Doe"
+                disabled={loading}
                 className="
                   w-full rounded-xl px-4 py-2
                   border border-gray-300 bg-white text-gray-900
@@ -99,6 +153,7 @@ export default function SignupForm() {
               name="username"
               required
               placeholder="newlearner"
+              disabled={loading}
               className="
                 w-full rounded-xl px-4 py-2
                 border border-gray-300 bg-white text-gray-900
@@ -119,6 +174,7 @@ export default function SignupForm() {
               type="email"
               required
               placeholder="you@example.com"
+              disabled={loading}
               className="
                 w-full rounded-xl px-4 py-2
                 border border-gray-300 bg-white text-gray-900
@@ -140,6 +196,7 @@ export default function SignupForm() {
               required
               minLength={8}
               placeholder="••••••••"
+              disabled={loading}
               className="
                 w-full rounded-xl px-4 py-2
                 border border-gray-300 bg-white text-gray-900
@@ -163,6 +220,7 @@ export default function SignupForm() {
               required
               minLength={8}
               placeholder="••••••••"
+              disabled={loading}
               className="
                 w-full rounded-xl px-4 py-2
                 border border-gray-300 bg-white text-gray-900
@@ -175,16 +233,20 @@ export default function SignupForm() {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full rounded-xl bg-blue-600 text-white py-2 font-medium hover:bg-blue-700 transition"
+            disabled={loading}
+            className="w-full rounded-xl bg-blue-600 text-white py-2 font-medium hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Sign Up
+            {loading ? "Signing you in..." : "Sign Up"}
           </button>
         </form>
 
         {/* Footer */}
         <p className="mt-6 text-sm text-center text-gray-600 dark:text-zinc-400">
           Already have an account?{" "}
-          <Link className="text-blue-600 dark:text-blue-400 hover:underline" href="/signin">
+          <Link
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+            href="/signin"
+          >
             Log in
           </Link>
         </p>
