@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { useTheme } from "next-themes";
+
 
 const NavBar = () => {
   const links = [
@@ -12,7 +14,6 @@ const NavBar = () => {
     { name: "Courses", href: "/courses" },
     { name: "Calendar", href: "/calendar" },
   ];
-
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -27,6 +28,18 @@ const NavBar = () => {
     };
   }, [mobileOpen]);
 
+  // Logo
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  const logoSrc =
+    mounted && resolvedTheme === "dark"
+      ? "/assets/logo/logo_dark.svg"
+      : "/assets/logo/logo.svg";
+
+
   return (
     <nav className="fixed top-0 w-full z-50">
       <div className="bg-[#FAFAFA] shadow-md dark:bg-zinc-950/90 dark:backdrop-blur dark:border-b dark:border-white/10">
@@ -34,7 +47,7 @@ const NavBar = () => {
           {/* Logo */}
           <Link href="/" className="relative w-60 h-24">
             <Image
-              src="/assets/logo/logo.svg"
+              src={logoSrc}
               alt="logo"
               fill
               className="object-contain"
@@ -51,11 +64,10 @@ const NavBar = () => {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className={`text-sm font-medium transition ${
-                      isActive
+                    className={`text-sm font-medium transition ${isActive
                         ? "text-orange-400"
                         : "text-zinc-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
-                    }`}
+                      }`}
                   >
                     {link.name}
                   </Link>
@@ -99,24 +111,21 @@ const NavBar = () => {
 
       {/* Mobile Overlay */}
       <div
-        className={`md:hidden fixed inset-0 z-[60] transition ${
-          mobileOpen ? "pointer-events-auto" : "pointer-events-none"
-        }`}
+        className={`md:hidden fixed inset-0 z-[60] transition ${mobileOpen ? "pointer-events-auto" : "pointer-events-none"
+          }`}
         aria-hidden={!mobileOpen}
       >
         {/* Backdrop */}
         <div
-          className={`absolute inset-0 bg-black/40 transition-opacity ${
-            mobileOpen ? "opacity-100" : "opacity-0"
-          }`}
+          className={`absolute inset-0 bg-black/40 transition-opacity ${mobileOpen ? "opacity-100" : "opacity-0"
+            }`}
           onClick={() => setMobileOpen(false)}
         />
 
         {/* Panel */}
         <div
-          className={`absolute right-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl transition-transform ${
-            mobileOpen ? "translate-x-0" : "translate-x-full"
-          } dark:bg-zinc-950 dark:border-l dark:border-white/10`}
+          className={`absolute right-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl transition-transform ${mobileOpen ? "translate-x-0" : "translate-x-full"
+            } dark:bg-zinc-950 dark:border-l dark:border-white/10`}
           role="dialog"
           aria-modal="true"
         >
@@ -143,11 +152,10 @@ const NavBar = () => {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className={`block rounded-xl px-4 py-3 text-base font-medium transition ${
-                        isActive
+                      className={`block rounded-xl px-4 py-3 text-base font-medium transition ${isActive
                           ? "bg-orange-50 text-orange-500 dark:bg-orange-500/15 dark:text-orange-300"
                           : "text-zinc-800 hover:bg-black/5 dark:text-zinc-100 dark:hover:bg-white/10"
-                      }`}
+                        }`}
                       onClick={() => setMobileOpen(false)}
                     >
                       {link.name}

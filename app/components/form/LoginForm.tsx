@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import study from "@/public/assets/signin/study.png";
 import owlLogo from "@/public/owl.png";
@@ -6,20 +7,29 @@ import Link from "next/link";
 
 const LoginForm = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center">
-      {/* Background Image */}
-      <div className="absolute inset-0 -z-10">
+    <section className="relative isolate min-h-screen flex items-center justify-center">
+      {/* Background (no negative z-index) */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none">
         <Image
           src={study}
           alt="Study background"
           fill
           priority
-          className="object-cover brightness-50"
+          sizes="100vw"
+          className="object-cover brightness-75 dark:brightness-50"
         />
+        <div className="absolute inset-0 bg-white/40 dark:bg-black/60" />
       </div>
 
-      {/* Login Card */}
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+      {/* Login Card (on top) */}
+      <div
+        className="
+          relative z-10 w-full max-w-md rounded-2xl p-8
+          bg-white shadow-xl
+          dark:bg-zinc-900/80 dark:backdrop-blur
+          dark:border dark:border-white/10
+        "
+      >
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <Image
@@ -31,61 +41,68 @@ const LoginForm = () => {
           />
         </div>
 
-        <h2 className="text-2xl font-semibold text-center text-gray-900 mb-2">
+        <h2 className="text-2xl font-semibold text-center text-gray-900 dark:text-zinc-100 mb-2">
           Welcome back
         </h2>
-        <p className="text-sm text-center text-gray-500 mb-6">
+
+        <p className="text-sm text-center text-gray-500 dark:text-zinc-400 mb-6">
           Log in to continue studying smarter
         </p>
 
         <form className="space-y-4">
-          {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
               Email
             </label>
             <input
               type="email"
               placeholder="you@example.com"
-              className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="
+                w-full rounded-xl px-4 py-2
+                border border-gray-300 bg-white text-gray-900
+                focus:outline-none focus:ring-2 focus:ring-blue-500
+                dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-100
+                dark:placeholder-zinc-400
+              "
             />
           </div>
 
-          {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
               Password
             </label>
             <input
               type="password"
               placeholder="••••••••"
-              className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="
+                w-full rounded-xl px-4 py-2
+                border border-gray-300 bg-white text-gray-900
+                focus:outline-none focus:ring-2 focus:ring-blue-500
+                dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-100
+              "
             />
           </div>
 
-          {/* Forgot password */}
           <div className="flex justify-end">
             <button
               type="button"
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
             >
               Forgot password?
             </button>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
-            className="w-full rounded-xl bg-blue-600 text-white py-2 font-medium hover:bg-blue-700 transition"
+            className="w-full rounded-xl py-2 font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
           >
             Log In
           </button>
         </form>
 
-        {/* Footer */}
-        <p className="mt-6 text-sm text-center text-gray-600">
+        <p className="mt-6 text-sm text-center text-gray-600 dark:text-zinc-400">
           Don’t have an account?{" "}
-          <Link className="text-blue-600 hover:underline cursor-pointer" href="/signup">
+          <Link className="text-blue-600 dark:text-blue-400 hover:underline" href="/signup">
             Sign up
           </Link>
         </p>

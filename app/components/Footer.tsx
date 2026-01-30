@@ -1,11 +1,25 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 
-import logo from "@/public/assets/logo/logo_dark.svg";
 import ThemeToggle from "./ThemeToggle";
 
 const FooterPage = () => {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const logoSrc =
+    mounted && resolvedTheme === "dark"
+      ? "/assets/logo/logo_dark.svg"
+      : "/assets/logo/logo.svg";
+
   return (
     <footer className="bg-white text-zinc-600 dark:bg-zinc-800 dark:text-white">
       <div className="max-w-6xl mx-auto px-4 py-12">
@@ -13,7 +27,15 @@ const FooterPage = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="relative h-20 w-70">
-              <Image src={logo} alt="StudySmart logo" fill className="object-contain" />
+              {mounted && (
+                <Image
+                  src={logoSrc}
+                  alt="StudySmart logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              )}
             </div>
 
             <p className="text-sm leading-relaxed dark:text-white/80">
@@ -28,38 +50,16 @@ const FooterPage = () => {
               Product
             </h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="#Hero"
-                  className="hover:text-zinc-900 dark:hover:text-white"
-                >
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-zinc-900 dark:hover:text-white"
-                >
-                  Features
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-zinc-900 dark:hover:text-white"
-                >
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-zinc-900 dark:hover:text-white"
-                >
-                  FAQ
-                </Link>
-              </li>
+              {["Dashboard", "Features", "Pricing", "FAQ"].map((item) => (
+                <li key={item}>
+                  <Link
+                    href="#"
+                    className="hover:text-zinc-900 dark:hover:text-white"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -69,38 +69,16 @@ const FooterPage = () => {
               Company
             </h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-zinc-900 dark:hover:text-white"
-                >
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-zinc-900 dark:hover:text-white"
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-zinc-900 dark:hover:text-white"
-                >
-                  Privacy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-zinc-900 dark:hover:text-white"
-                >
-                  Terms
-                </Link>
-              </li>
+              {["About", "Contact", "Privacy", "Terms"].map((item) => (
+                <li key={item}>
+                  <Link
+                    href="#"
+                    className="hover:text-zinc-900 dark:hover:text-white"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -117,7 +95,9 @@ const FooterPage = () => {
               Try for free
             </button>
 
-            {/* Put toggle here so it doesn't float weird */}
+            
+          </div>
+          <div className="mx-auto">
             <ThemeToggle />
           </div>
         </div>
@@ -127,7 +107,9 @@ const FooterPage = () => {
           <p className="dark:text-white/80">
             © {new Date().getFullYear()} StudySmart. All rights reserved.
           </p>
-          <p className="mt-2 sm:mt-0 dark:text-white/80">Built for students 📚</p>
+          <p className="mt-2 sm:mt-0 dark:text-white/80">
+            Built for students 📚
+          </p>
         </div>
       </div>
     </footer>
