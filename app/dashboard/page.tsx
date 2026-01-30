@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth-options";
+import FooterPage from "../components/Footer";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -141,6 +142,7 @@ export default async function DashboardPage() {
           </div>
         </section>
       </div>
+      <FooterPage />
     </main>
   );
 }
