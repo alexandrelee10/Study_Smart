@@ -8,7 +8,8 @@ import TryForFree from './components/TryForFree'
 
 const HomePage = () => {
   return (
-    <div className=''>
+    <div className=''
+>
       <HeroPage />
       <TrustedByPage />
       <AboutUsPage />

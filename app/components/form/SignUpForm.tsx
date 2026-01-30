@@ -1,130 +1,154 @@
+"use client";
+
 import Image from "next/image";
-import studyPic from "@/public/assets/signin/study.png";
+import Link from "next/link";
+import study from "@/public/assets/signin/study.png";
+import owlLogo from "@/public/owl.png";
 import { signup } from "@/app/signup/actions";
 
 export default function SignupForm() {
   return (
-    <section className="min-h-screen w-full grid lg:grid-cols-2">
-      {/* LEFT: Image panel */}
-      <div className="relative hidden lg:block">
+    <section className="relative min-h-screen flex items-center justify-center">
+      {/* Background Image */}
+      <div className="absolute inset-0 -z-10">
         <Image
-          src={studyPic}
+          src={study}
           alt="Study background"
           fill
           priority
-          className="object-cover"
+          className="object-cover brightness-50"
         />
-        <div className="absolute inset-0 bg-black/55" />
-        <div className="absolute inset-0 flex items-center justify-center px-10">
-          <div className="text-center text-white">
-            <h1 className="text-5xl font-bold tracking-tight">StudySmart</h1>
-            <p className="mt-3 text-xl text-white/85">
-              Build consistent study habits.
-            </p>
-          </div>
-        </div>
       </div>
 
-      {/* RIGHT: Form panel */}
-      <div className="flex min-h-screen items-center justify-center bg-white px-6 py-10">
-        <div className="w-full max-w-md">
-          <div className="rounded-3xl border border-zinc-200 bg-white p-8 shadow-sm">
-            <div className="mb-6 text-center">
-              <h2 className="text-2xl font-semibold text-zinc-900">Create account</h2>
-              <p className="text-sm text-zinc-500">Start tracking your progress.</p>
+      {/* Signup Card */}
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <Image
+            src={owlLogo}
+            alt="Owl logo"
+            width={64}
+            height={64}
+            className="object-contain"
+          />
+        </div>
+
+        <h2 className="text-2xl font-semibold text-center text-gray-900 mb-2">
+          Create your account
+        </h2>
+        <p className="text-sm text-center text-gray-500 mb-6">
+          Start tracking your study progress
+        </p>
+
+        <form action={signup} className="space-y-4">
+          {/* Name row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                First name
+              </label>
+              <input
+                name="firstName"
+                required
+                placeholder="Alexandre"
+                className="w-full rounded-xl border border-gray-300 px-4 py-2
+                           focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
 
-            <form action={signup} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-zinc-700">
-                    First name
-                  </label>
-                  <input
-                    name="firstName"
-                    required
-                    className="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm outline-none ring-1 ring-zinc-200 focus:ring-2 focus:ring-black"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-zinc-700">
-                    Last name
-                  </label>
-                  <input
-                    name="lastName"
-                    required
-                    className="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm outline-none ring-1 ring-zinc-200 focus:ring-2 focus:ring-black"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-zinc-700">
-                  Username
-                </label>
-                <input
-                  name="username"
-                  required
-                  className="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm outline-none ring-1 ring-zinc-200 focus:ring-2 focus:ring-black"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-zinc-700">
-                  Email
-                </label>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  className="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm outline-none ring-1 ring-zinc-200 focus:ring-2 focus:ring-black"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-zinc-700">
-                  Password
-                </label>
-                <input
-                  name="password"
-                  type="password"
-                  required
-                  minLength={8}
-                  className="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm outline-none ring-1 ring-zinc-200 focus:ring-2 focus:ring-black"
-                  placeholder="At least 8 characters"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-zinc-700">
-                  Confirm password
-                </label>
-                <input
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  minLength={8}
-                  className="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm outline-none ring-1 ring-zinc-200 focus:ring-2 focus:ring-black"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-zinc-900 py-3 text-sm font-semibold text-white hover:bg-zinc-800"
-              >
-                Sign up →
-              </button>
-            </form>
-
-            <div className="mt-6 text-center text-sm text-zinc-500">
-              Already have an account?{" "}
-              <a className="font-semibold text-blue-600 hover:underline" href="/signin">
-                Log in →
-              </a>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Last name
+              </label>
+              <input
+                name="lastName"
+                required
+                placeholder="Lee"
+                className="w-full rounded-xl border border-gray-300 px-4 py-2
+                           focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
           </div>
-        </div>
+
+          {/* Username */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Username
+            </label>
+            <input
+              name="username"
+              required
+              placeholder="alexlee"
+              className="w-full rounded-xl border border-gray-300 px-4 py-2
+                         focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              name="email"
+              type="email"
+              required
+              placeholder="you@example.com"
+              className="w-full rounded-xl border border-gray-300 px-4 py-2
+                         focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              name="password"
+              type="password"
+              required
+              minLength={8}
+              placeholder="••••••••"
+              className="w-full rounded-xl border border-gray-300 px-4 py-2
+                         focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">At least 8 characters</p>
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm password
+            </label>
+            <input
+              name="confirmPassword"
+              type="password"
+              required
+              minLength={8}
+              placeholder="••••••••"
+              className="w-full rounded-xl border border-gray-300 px-4 py-2
+                         focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full rounded-xl bg-blue-600 text-white py-2 font-medium
+                       hover:bg-blue-700 transition"
+          >
+            Sign Up
+          </button>
+        </form>
+
+        {/* Footer */}
+        <p className="mt-6 text-sm text-center text-gray-600">
+          Already have an account?{" "}
+          <Link className="text-blue-600 hover:underline" href="/signin">
+            Log in
+          </Link>
+        </p>
       </div>
     </section>
   );

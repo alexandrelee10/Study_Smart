@@ -40,14 +40,15 @@ const GetStartedPage = () => {
   ];
 
   return (
-    <section className="py-20">
+    <section className="py-20 dark:bg-zinc-950">
       <div className="max-w-6xl mx-auto px-4 text-center">
         {/* Header */}
         <div className="mb-12 space-y-3">
-          <h2 className="text-sm font-semibold tracking-wide text-blue-600 uppercase">
+          <h2 className="text-sm font-semibold tracking-wide text-blue-600 uppercase dark:text-blue-400">
             Get started now
           </h2>
-          <h1 className="text-4xl font-bold">
+
+          <h1 className="text-4xl font-bold dark:text-zinc-100">
             Start your journey here!
           </h1>
         </div>
@@ -58,8 +59,8 @@ const GetStartedPage = () => {
             <Link
               key={c.name}
               href="#"
-              className="group rounded-2xl p-6
-                         hover:shadow-lg transition bg-white text-left"
+              className="group rounded-2xl p-6 hover:shadow-lg transition text-left
+                         dark:bg-white/5 dark:border dark:border-white/10 dark:hover:bg-white/10 dark:hover:shadow-none"
             >
               {/* Image */}
               <div className="mb-4 flex justify-center">
@@ -73,11 +74,11 @@ const GetStartedPage = () => {
               </div>
 
               {/* Text */}
-              <h3 className="text-xl font-semibold mb-2 text-center">
+              <h3 className="text-xl font-semibold mb-2 text-center dark:text-zinc-100">
                 {c.title}
               </h3>
 
-              <p className="text-sm text-zinc-600 leading-relaxed text-center">
+              <p className="text-sm text-zinc-600 leading-relaxed text-center dark:text-zinc-400">
                 {c.description}
               </p>
             </Link>

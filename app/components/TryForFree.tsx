@@ -3,20 +3,22 @@ import Image from "next/image";
 
 const TryForFree = () => {
   return (
-    <section className="py-20">
+    <section className="py-20 dark:bg-zinc-950">
       <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left */}
           <div className="space-y-6">
             <div className="space-y-3">
-              <h2 className="text-4xl font-bold">Try StudySmart for free</h2>
-              <p className="text-lg text-zinc-600">
+              <h2 className="text-4xl font-bold dark:text-zinc-100">
+                Try StudySmart for free
+              </h2>
+              <p className="text-lg text-zinc-600 dark:text-zinc-400">
                 Kickstart your most productive semester. Start with 14 days free
                 and build a study routine that actually sticks.
               </p>
             </div>
 
-            <ul className="space-y-3 text-zinc-700">
+            <ul className="space-y-3 text-zinc-700 dark:text-zinc-300">
               <li className="flex items-start gap-3">
                 <span className="mt-1 h-2 w-2 rounded-full bg-blue-500" />
                 <span>User-friendly study tracking</span>
@@ -35,12 +37,15 @@ const TryForFree = () => {
               <button className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
                 Get Started Now
               </button>
-              <p className="text-sm text-zinc-500">No credit card required.</p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                No credit card required.
+              </p>
             </div>
           </div>
 
           {/* Right */}
-          <div className="relative w-full aspect-[16/10] rounded-2xl bg-white overflow-hidden shadow-sm">
+          <div className="relative w-full aspect-[16/10] rounded-2xl bg-white overflow-hidden shadow-sm
+                          dark:bg-white/5 dark:border dark:border-white/10 dark:shadow-none">
             <Image
               src="/assets/hero/hero_1.png"
               alt="Study Smart dashboard"
@@ -49,6 +54,8 @@ const TryForFree = () => {
               quality={95}
               className="object-cover"
             />
+            {/* Dark-only subtle overlay to reduce glare */}
+            <div className="pointer-events-none absolute inset-0 hidden dark:block bg-black/10" />
           </div>
         </div>
       </div>

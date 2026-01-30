@@ -30,35 +30,40 @@ const faqs = [
 ];
 
 export default function FAQ() {
-  // top FAQ starts open
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-16">
+    <section className="py-16 dark:bg-zinc-950">
       <div className="max-w-3xl mx-auto px-4">
-        <h2 className="text-5xl font-bold text-center mb-10">FAQ</h2>
+        <h2 className="text-5xl font-bold text-center mb-10 dark:text-zinc-100">
+          FAQ
+        </h2>
 
         <div className="space-y-4">
           {faqs.map((item, i) => {
             const open = openIndex === i;
+
             return (
               <div
                 key={item.q}
-                className="rounded-2xl border border-zinc-200 bg-white overflow-hidden hover:shadow-lg"
+                className="rounded-2xl border border-zinc-200 overflow-hidden hover:shadow-lg transition
+                           dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10 dark:hover:shadow-none"
               >
                 <button
                   onClick={() => setOpenIndex(open ? null : i)}
                   className="w-full flex items-center justify-between gap-4 p-5 text-left"
                 >
-                  <span className="text-lg font-semibold flex-1">{item.q}</span>
+                  <span className="text-lg font-semibold flex-1 dark:text-zinc-100">
+                    {item.q}
+                  </span>
 
-                  <span className="text-2xl leading-none shrink-0">
+                  <span className="text-2xl leading-none shrink-0 text-zinc-700 dark:text-zinc-300">
                     {open ? "−" : "+"}
                   </span>
                 </button>
 
                 {open && (
-                  <div className="px-5 pb-5 text-zinc-600 leading-relaxed">
+                  <div className="px-5 pb-5 text-zinc-600 leading-relaxed dark:text-zinc-400">
                     {item.a}
                   </div>
                 )}

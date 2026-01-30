@@ -28,3 +28,13 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+html, body {
+  height: 100%;
+}
+
+
+@import "tailwindcss";
+
+/* THIS LINE is what makes dark: work with class-based theming */
+@custom-variant dark (&:where(.dark, .dark *));
