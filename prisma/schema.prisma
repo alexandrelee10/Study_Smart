@@ -13,7 +13,8 @@ enum Role {
 }
 
 enum CourseType {
-  MATH
+  MATHlee123
+  
   READING
   ENGLISH
   SCIENCE
