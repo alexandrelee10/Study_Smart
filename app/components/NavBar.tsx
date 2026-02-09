@@ -53,7 +53,7 @@ const NavBar = () => {
   const userImage = user?.image ?? "";
 
   const PersonIcon = ({ size = 18 }: { size?: number }) => (
-    // Bootstrap "person-circle" icon (inline SVG)
+    // Person icon
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={size}
