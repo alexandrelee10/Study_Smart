@@ -37,23 +37,128 @@ async function main() {
     },
   });
 
-  // ---------- COURSES ----------
-  const cs = await prisma.course.create({
-    data: {
-      name: "Computer Science I",
-      code: "COP2210",
-      type: "COMPUTER_SCIENCE",
-      edLevel: "COLLEGE",
-    },
-  });
+// ---------- COURSES ----------
+const cs = await prisma.course.create({
+  data: {
+    name: "Computer Science I",
+    code: "COP2210",
+    type: "COMPUTER_SCIENCE",
+    edLevel: "COLLEGE",
+    image: "/assets/courses/cp.png",
+  },
+});
 
-  const math = await prisma.course.create({
-    data: {
-      name: "College Algebra",
-      code: "MAC1105",
-      edLevel: "COLLEGE",
-    },
-  });
+const math = await prisma.course.create({
+  data: {
+    name: "College Algebra",
+    code: "MAC1105",
+    edLevel: "COLLEGE",
+    type: "MATH",
+    image: "/assets/courses/ca.png",
+  },
+});
+
+const cs2 = await prisma.course.create({
+  data: {
+    name: "Data Structures",
+    code: "COP3530",
+    type: "COMPUTER_SCIENCE",
+    edLevel: "COLLEGE",
+    image: "/assets/courses/cp.png",
+  },
+});
+
+const math2 = await prisma.course.create({
+  data: {
+    name: "Precalculus",
+    code: "MAC1147",
+    edLevel: "COLLEGE",
+    type: "MATH",
+    image: "/assets/courses/ca.png",
+  },
+});
+
+const reading1 = await prisma.course.create({
+  data: {
+    name: "Critical Reading",
+    code: "REA1101",
+    type: "READING",
+    edLevel: "HIGH_SCHOOL",
+    image: "/assets/courses/eng.png",
+  },
+});
+
+const english1 = await prisma.course.create({
+  data: {
+    name: "English Composition I",
+    code: "ENC1101",
+    type: "ENGLISH",
+    edLevel: "COLLEGE",
+    image: "/assets/courses/eng.png",
+  },
+});
+
+const english2 = await prisma.course.create({
+  data: {
+    name: "English Composition II",
+    code: "ENC1102",
+    type: "ENGLISH",
+    edLevel: "COLLEGE",
+    image: "/assets/courses/eng.png",
+  },
+});
+
+const science1 = await prisma.course.create({
+  data: {
+    name: "General Biology",
+    code: "BSC2010",
+    type: "SCIENCE",
+    edLevel: "COLLEGE",
+    image: "/assets/courses/sci.png",
+  },
+});
+
+const science2 = await prisma.course.create({
+  data: {
+    name: "General Chemistry",
+    code: "CHM1045",
+    type: "SCIENCE",
+    edLevel: "COLLEGE",
+    image: "/assets/courses/sci.png",
+  },
+});
+
+const history1 = await prisma.course.create({
+  data: {
+    name: "World History",
+    code: "HIS1010",
+    type: "HISTORY",
+    edLevel: "HIGH_SCHOOL",
+    image: "/assets/courses/his.png",
+  },
+});
+
+const nursing1 = await prisma.course.create({
+  data: {
+    name: "Foundations of Nursing",
+    code: "NUR1020",
+    type: "NURSING",
+    edLevel: "COLLEGE",
+    image: "/assets/courses/nursing.png",
+  },
+});
+
+const social1 = await prisma.course.create({
+  data: {
+    name: "Social Media Marketing",
+    code: "SMM2000",
+    type: "SOCIAL_MEDIA",
+    edLevel: "COLLEGE",
+    image: "/assets/courses/sm.png",
+  },
+});
+
+  
 
   // ---------- ENROLLMENTS ----------
   await prisma.enrollment.createMany({

@@ -13,7 +13,6 @@ enum Role {
 }
 
 enum CourseType {
-  MATH
   READING
   ENGLISH
   SCIENCE
@@ -21,6 +20,7 @@ enum CourseType {
   COMPUTER_SCIENCE
   NURSING
   SOCIAL_MEDIA
+  MATH
   OTHER
 }
 
