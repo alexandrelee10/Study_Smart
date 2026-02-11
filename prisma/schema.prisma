@@ -78,6 +78,7 @@ enum CourseDifficulty {
   HARD
 }
 
+/// ------- User ------- 
 model User {
   id            String    @id @default(cuid())
   username      String    @unique
@@ -104,19 +105,18 @@ model User {
   dailyProgresses DailyProgress[]
 }
 
-/// ------- Courses ------- \\\
+/// ------- Courses -------
 model Course {
-  id          String         @id @default(cuid())
+  id          String           @id @default(cuid())
   name        String
-  code        String // "CAP3103"
+  code        String           @unique // "CAP3103"
   description String?
   image       String?
-  type        CourseType     @default(OTHER)
-  edLevel     EducationLevel @default(OTHER)
-  difficulty CourseDifficulty @default(MEDIUM)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  type        CourseType       @default(OTHER)
+  edLevel     EducationLevel   @default(OTHER)
+  difficulty  CourseDifficulty @default(MEDIUM)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   // Relations
   enrollments    Enrollment[]
@@ -128,8 +128,8 @@ model Course {
   dailyProgresses DailyProgress[]
 
   lessons Lesson[]
-
 }
+
 /// ------- Enrollment-------
 /// lets a User have many Courses and a Course have many Users
 model Enrollment {
@@ -171,7 +171,7 @@ model Assignment {
   @@index([dueDate])
 }
 
-/// Study Session 
+/// ------- Study Session -------
 model StudySession {
   id        String    @id @default(cuid())
   userId    String
@@ -189,7 +189,7 @@ model StudySession {
   @@index([startedAt])
 }
 
-/// Goals
+/// ------- Goals ------- 
 model StudyGoal {
   id       String  @id @default(cuid())
   userId   String
@@ -210,7 +210,7 @@ model StudyGoal {
   @@index([courseId])
 }
 
-/// Calendar
+/// ------- Calendar -------
 model CalendarEvent {
   id     String @id @default(cuid())
   userId String
@@ -247,6 +247,7 @@ model CalendarEvent {
   @@index([startAt])
 }
 
+/// ------- Calendar Recurrence -------
 model CalendarRecurrence {
   id String @id @default(cuid())
 
@@ -265,6 +266,7 @@ model CalendarRecurrence {
   updatedAt DateTime @updatedAt
 }
 
+/// ------- Daily Progress -------
 model DailyProgress {
   id       String   @id @default(cuid())
   userId   String
@@ -281,6 +283,7 @@ model DailyProgress {
   @@index([courseId, date])
 }
 
+/// ------- Lesson -------
 model Lesson {
   id          String @id @default(cuid())
   name        String
