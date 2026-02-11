@@ -60,42 +60,63 @@ enum RecurrenceFrequency {
   YEARLY
 }
 
+enum LessonStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum CourseDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
 model User {
-  id            String   @id @default(cuid())
-  username      String   @unique
+  id            String    @id @default(cuid())
+  username      String    @unique
   firstName     String
   lastName      String
   dob           DateTime?
-  email         String   @unique
+  email         String    @unique
   emailVerified DateTime?
   password      String
   phoneNumber   String?
   image         String?
 
-  role          Role     @default(STUDENT)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   enrollments    Enrollment[]
   studySessions  StudySession[]
-  assignments    Assignment[]     @relation("AssignedToUser")
+  assignments    Assignment[]    @relation("AssignedToUser")
   goals          StudyGoal[]
   calendarEvents CalendarEvent[]
 
   dailyProgresses DailyProgress[]
 }
 
+/// ------- Courses ------- \\\
 model Course {
-  id        String         @id @default(cuid())
-  name      String
-  code      String         // "CAP3103"
-  image     String?
-  type      CourseType     @default(OTHER)
-  edLevel   EducationLevel @default(OTHER)
-
+  id          String         @id @default(cuid())
+  name        String
+  code        String // "CAP3103"
+  description String?
+  image       String?
+  type        CourseType     @default(OTHER)
+  edLevel     EducationLevel @default(OTHER)
+  difficulty CourseDifficulty @default(MEDIUM)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
 
   // Relations
   enrollments    Enrollment[]
@@ -105,8 +126,11 @@ model Course {
   calendarEvents CalendarEvent[]
 
   dailyProgresses DailyProgress[]
-}
 
+  lessons Lesson[]
+
+}
+/// ------- Enrollment-------
 /// lets a User have many Courses and a Course have many Users
 model Enrollment {
   id        String   @id @default(cuid())
@@ -121,39 +145,40 @@ model Enrollment {
   @@index([userId])
   @@index([courseId])
 }
-/// Assignments
+
+/// ------- Assignments -------
 model Assignment {
-  id           String           @id @default(cuid())
-  title        String
-  description  String?
-  dueDate      DateTime?
-  status       AssignmentStatus @default(TODO)
+  id          String           @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  status      AssignmentStatus @default(TODO)
 
   // Relations
   courseId     String
-  assignedToId String? // optional: assignment can be assigned to a specific user
+  assignedToId String?
 
-  course      Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  assignedTo  User?  @relation("AssignedToUser", fields: [assignedToId], references: [id], onDelete: SetNull)
+  course     Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  assignedTo User?  @relation("AssignedToUser", fields: [assignedToId], references: [id], onDelete: SetNull)
 
-  // Optional back-reference to calendar events tied to this assignment
   calendarEvents CalendarEvent[]
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([courseId])
   @@index([assignedToId])
   @@index([dueDate])
 }
+
 /// Study Session 
 model StudySession {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
-  courseId  String?  // optional: sometimes you study without selecting a course
-  startedAt DateTime @default(now())
+  courseId  String? // optional: sometimes you study without selecting a course
+  startedAt DateTime  @default(now())
   endedAt   DateTime?
-  minutes   Int?     // optional; you can compute from started/ended or store directly
+  minutes   Int? // optional; you can compute from started/ended or store directly
   notes     String?
 
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -163,11 +188,12 @@ model StudySession {
   @@index([courseId])
   @@index([startedAt])
 }
+
 /// Goals
 model StudyGoal {
-  id                   String   @id @default(cuid())
-  userId               String
-  courseId             String?
+  id       String  @id @default(cuid())
+  userId   String
+  courseId String?
 
   // Example goal fields
   targetMinutesPerWeek Int
@@ -183,32 +209,33 @@ model StudyGoal {
   @@index([userId])
   @@index([courseId])
 }
+
 /// Calendar
 model CalendarEvent {
-  id          String               @id @default(cuid())
-  userId      String
+  id     String @id @default(cuid())
+  userId String
 
   title       String
   description String?
   location    String?
 
-  type        CalendarEventType    @default(OTHER)
-  status      CalendarEventStatus  @default(CONFIRMED)
+  type   CalendarEventType   @default(OTHER)
+  status CalendarEventStatus @default(CONFIRMED)
 
-  startAt     DateTime
-  endAt       DateTime?
-  allDay      Boolean              @default(false)
+  startAt DateTime
+  endAt   DateTime?
+  allDay  Boolean   @default(false)
 
   // Optional linkage into your existing models
   courseId     String?
   assignmentId String?
 
   // Recurrence (simple + practical)
-  isRecurring  Boolean             @default(false)
-  recurrence   CalendarRecurrence?
+  isRecurring Boolean             @default(false)
+  recurrence  CalendarRecurrence?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   course     Course?     @relation(fields: [courseId], references: [id], onDelete: SetNull)
@@ -221,33 +248,30 @@ model CalendarEvent {
 }
 
 model CalendarRecurrence {
-  id        String @id @default(cuid())
+  id String @id @default(cuid())
 
-  // One-to-one with CalendarEvent
-  eventId   String @unique
-  event     CalendarEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String        @unique // One-to-one with CalendarEvent
+  event   CalendarEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   frequency RecurrenceFrequency
-  interval  Int      @default(1) // every 1 week, every 2 weeks, etc.
+  interval  Int                 @default(1) // every 1 week, every 2 weeks, etc.
 
-  // Use integers (0-6) for days of week: 0=Sun ... 6=Sat
-  byWeekday Int[]    // typically used for WEEKLY patterns; leave empty otherwise
+  byWeekday Int[] // Use integers (0-6) for days of week: 0=Sun ... 6=Sat.. Used for weekly patterns
 
-  // Optional end condition
-  until     DateTime?
-  count     Int?
+  until DateTime?
+  count Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model DailyProgress {
-  id        String   @id @default(cuid())
-  userId    String
-  courseId  String?
-  date      DateTime // store at midnight
-  minutes   Int      @default(0)
-  sessions  Int      @default(0)
+  id       String   @id @default(cuid())
+  userId   String
+  courseId String?
+  date     DateTime // store at midnight
+  minutes  Int      @default(0)
+  sessions Int      @default(0)
 
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
@@ -255,4 +279,28 @@ model DailyProgress {
   @@unique([userId, courseId, date])
   @@index([userId, date])
   @@index([courseId, date])
+}
+
+model Lesson {
+  id          String @id @default(cuid())
+  name        String
+  description String
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  date        DateTime
+  startedAt   DateTime
+  completedAt DateTime?
+
+  durationMinutes Int?
+  actualMinutes   Int?
+
+  status     LessonStatus @default(NOT_STARTED)
+  difficulty Difficulty?
+
+  isPublished Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

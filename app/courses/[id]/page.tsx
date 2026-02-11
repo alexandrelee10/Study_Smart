@@ -1,9 +1,9 @@
 // app/courses/[id]/page.tsx
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { prisma } from "@/app/lib/prisma"; // adjust path if needed
+import { prisma } from "@/app/lib/prisma";
 import FooterPage from "@/app/components/Footer";
-
+import Link from "next/link";
 const formatEnum = (value?: string | null) =>
   (value ?? "OTHER").split("_").join(" ");
 
@@ -24,7 +24,7 @@ export default async function CoursePage({
       name: true,
       image: true,
       type: true,
-      edLevel: true, // ✅ your schema shows edLevel
+      edLevel: true,
       createdAt: true,
     },
   });
@@ -33,9 +33,15 @@ export default async function CoursePage({
 
   return (
     <div className="min-h-screen pt-28 p-6">
-      <div className="mx-auto max-w-4xl">
-        <button className="p-3 underline text-zinc-500 dark:text-white hover:text-zinc-900 transition-all">Back</button>
-        <div className="overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800">
+      <div className="mx-auto max-w-6xl">
+        {/* Back Button */}
+        <Link
+          href="/courses"
+          className="text-sm font-medium text-zinc-600 hover:underline dark:text-zinc-300"
+        >
+          ← Back to courses
+        </Link>
+        <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
           {/* Image */}
           <div className="relative h-60 w-full bg-zinc-100 dark:bg-zinc-900">
             <Image
@@ -64,7 +70,7 @@ export default async function CoursePage({
             </p>
           </div>
         </div>
-        <FooterPage />
+          <FooterPage />
       </div>
     </div>
   );
