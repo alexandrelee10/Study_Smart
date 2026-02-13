@@ -5,11 +5,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth-options";
 import FooterPage from "../components/Footer";
 
+export const metadata = {title: "Study Smart | Dashboard"};
+
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/signin");
 
-  // ✅ Use username (we stored it in `name` in authorize()) + safe fallbacks
   const username =
     session.user.name ||
     (session.user.email ? session.user.email.split("@")[0] : "Student");
