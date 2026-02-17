@@ -103,6 +103,8 @@ model User {
   calendarEvents CalendarEvent[]
 
   dailyProgresses DailyProgress[]
+
+  planItems PlanItem[]
 }
 
 /// ------- Courses -------
@@ -178,6 +180,7 @@ model StudySession {
   courseId  String? // optional: sometimes you study without selecting a course
   startedAt DateTime  @default(now())
   endedAt   DateTime?
+  durationMin Int?
   minutes   Int? // optional; you can compute from started/ended or store directly
   notes     String?
 
@@ -306,4 +309,19 @@ model Lesson {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+/// --- Plan Item --- 
+model PlanItem {
+  id  String @id @default(cuid())
+  userId String
+  date DateTime
+  title String
+  done Boolean @default(false)
+  order Int @default(0)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, date])
 }

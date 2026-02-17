@@ -27,14 +27,31 @@ export const authOptions: NextAuthOptions = {
         const ok = await bcrypt.compare(password, user.password);
         if (!ok) return null;
 
-        // ✅ include username + image so UI can show it
         return {
           id: user.id,
           email: user.email,
-          name: user.username,          // we’ll use name as username for now
+          name: user.username,
           image: user.image ?? null,
         };
       },
     }),
   ],
+
+  callbacks: {
+    // Put the user.id into the token
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = (user as any).id;
+      }
+      return token;
+    },
+
+    // Put token.id into session.user.id
+    async session({ session, token }) {
+      if (session.user) {
+        (session.user as any).id = (token as any).id ?? token.sub;
+      }
+      return session;
+    },
+  },
 };
