@@ -19,12 +19,12 @@ const NavBar = () => {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // ✅ Auth session
+  // Auth session
   const { data: session, status } = useSession();
 
   useEffect(() => {
     setMobileOpen(false);
-    setProfileOpen(false); // ✅ close dropdown on navigation
+    setProfileOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const NavBar = () => {
               })}
             </ul>
 
-            {/* ✅ Person icon dropdown (always shows icon) */}
+            {/* Person icon */}
             {status === "loading" ? (
               <div className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm text-zinc-500 dark:text-zinc-400">
                 Loading…
@@ -178,6 +178,15 @@ const NavBar = () => {
                       role="menuitem"
                     >
                       Settings
+                    </Link>
+                    <Link
+                      href="/billing"
+                      className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
+                                dark:text-zinc-100 dark:hover:bg-white/10"
+                      onClick={() => setProfileOpen(false)}
+                      role="menuitem"
+                    >
+                      Billing
                     </Link>
 
                     <button
