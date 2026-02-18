@@ -12,7 +12,6 @@ const NavBar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
 
   const links = [
-    { name: "Home", href: "/" },
     { name: "Courses", href: "/courses" },
     { name: "Calendar", href: "/calendar" },
   ];
@@ -53,7 +52,6 @@ const NavBar = () => {
   const userImage = user?.image ?? "";
 
   const PersonIcon = ({ size = 18 }: { size?: number }) => (
-    // Person icon
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={size}
@@ -93,65 +91,74 @@ const NavBar = () => {
           </Link>
 
           {/* Desktop Links */}
-          <ul className="hidden md:flex items-center gap-6">
-            {links.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className={`text-sm font-medium transition ${
-                      isActive
-                        ? "text-orange-400"
-                        : "text-zinc-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              );
-            })}
+          <div className="hidden md:flex items-center gap-6">
+            <ul className="flex items-center gap-6">
+              {links.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className={`text-sm font-medium transition ${
+                        isActive
+                          ? "text-orange-400"
+                          : "text-zinc-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
 
-            {/* Desktop Right Slot: user OR sign in */}
+            {/* ✅ Person icon dropdown (always shows icon) */}
             {status === "loading" ? (
-              <div className="hidden md:flex items-center gap-2 rounded-xl px-4 py-2 text-sm text-zinc-500 dark:text-zinc-400">
+              <div className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm text-zinc-500 dark:text-zinc-400">
                 Loading…
               </div>
             ) : user ? (
-              <div className="relative hidden md:block">
-                {/* User pill button */}
+              <div className="relative">
                 <button
                   type="button"
                   onClick={() => setProfileOpen((v) => !v)}
-                  className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium
+                  className="inline-flex items-center justify-center rounded-xl p-2
                              text-zinc-800 hover:bg-black/5 transition
                              dark:text-zinc-100 dark:hover:bg-white/10"
                   aria-haspopup="menu"
                   aria-expanded={profileOpen}
+                  aria-label="Open profile menu"
                 >
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full overflow-hidden border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full overflow-hidden border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5">
                     {userImage ? (
                       <Image
                         src={userImage}
                         alt="Profile"
-                        width={32}
-                        height={32}
-                        className="h-8 w-8 object-cover"
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 object-cover"
                       />
                     ) : (
                       <PersonIcon size={18} />
                     )}
                   </span>
-                  <span className="max-w-[160px] truncate">{userLabel}</span>
                 </button>
 
-                {/* Dropdown */}
                 {profileOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-52 rounded-xl border border-black/10 bg-white shadow-lg
+                    className="absolute right-0 mt-2 w-56 rounded-xl border border-black/10 bg-white shadow-lg
                                dark:bg-zinc-950 dark:border-white/10 overflow-hidden"
                     role="menu"
                   >
+                    <div className="px-4 py-3 border-b border-black/10 dark:border-white/10">
+                      <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                        {userLabel}
+                      </p>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+                        {user.email ?? ""}
+                      </p>
+                    </div>
+
                     <Link
                       href="/dashboard"
                       className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
@@ -160,6 +167,17 @@ const NavBar = () => {
                       role="menuitem"
                     >
                       Dashboard
+                    </Link>
+
+                    {/* ✅ Settings added */}
+                    <Link
+                      href="/settings"
+                      className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
+                                 dark:text-zinc-100 dark:hover:bg-white/10"
+                      onClick={() => setProfileOpen(false)}
+                      role="menuitem"
+                    >
+                      Settings
                     </Link>
 
                     <button
@@ -177,14 +195,15 @@ const NavBar = () => {
             ) : (
               <Link
                 href="/signin"
-                className="hidden md:inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-zinc-700 hover:text-blue-600 hover:bg-black/5 transition
-                           dark:text-zinc-200 dark:hover:text-blue-400 dark:hover:bg-white/10"
+                className="inline-flex items-center justify-center rounded-xl p-2
+                           text-zinc-800 hover:bg-black/5 transition
+                           dark:text-zinc-100 dark:hover:bg-white/10"
+                aria-label="Sign in"
               >
                 <PersonIcon size={18} />
-                Sign in
               </Link>
             )}
-          </ul>
+          </div>
 
           {/* Mobile Hamburger */}
           <button
@@ -249,12 +268,9 @@ const NavBar = () => {
               </div>
             ) : user ? (
               <>
-                <Link
-                  href="/dashboard"
-                  onClick={() => setMobileOpen(false)}
-                  className="mb-2 flex items-center gap-3 rounded-2xl border border-black/10 px-4 py-3
-                             hover:bg-black/5 transition
-                             dark:border-white/10 dark:hover:bg-white/10"
+                <div
+                  className="mb-3 flex items-center gap-3 rounded-2xl border border-black/10 px-4 py-3
+                             dark:border-white/10"
                 >
                   <span className="inline-flex h-10 w-10 items-center justify-center rounded-full overflow-hidden border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5">
                     {userImage ? (
@@ -277,7 +293,29 @@ const NavBar = () => {
                       {user.email ?? ""}
                     </p>
                   </div>
-                </Link>
+                </div>
+
+                {/* ✅ Quick links: Dashboard + Settings */}
+                <div className="mb-4 grid grid-cols-2 gap-2">
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-xl border border-black/10 px-4 py-3 text-sm font-medium
+                               hover:bg-black/5 transition
+                               dark:border-white/10 dark:hover:bg-white/10"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/settings"
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-xl border border-black/10 px-4 py-3 text-sm font-medium
+                               hover:bg-black/5 transition
+                               dark:border-white/10 dark:hover:bg-white/10"
+                  >
+                    Settings
+                  </Link>
+                </div>
 
                 {/* ✅ Mobile sign out */}
                 <button
@@ -291,7 +329,18 @@ const NavBar = () => {
                   Sign out
                 </button>
               </>
-            ) : null}
+            ) : (
+              <Link
+                href="/signin"
+                className="mb-4 flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium
+                           text-zinc-800 hover:bg-black/5 transition
+                           dark:text-zinc-100 dark:hover:bg-white/10"
+                onClick={() => setMobileOpen(false)}
+              >
+                <PersonIcon size={20} />
+                Sign in
+              </Link>
+            )}
 
             <ul className="flex flex-col gap-2">
               {links.map((link) => {
@@ -312,24 +361,8 @@ const NavBar = () => {
                   </li>
                 );
               })}
-
-              {/* Mobile Sign In if logged out */}
-              {!user && status !== "loading" && (
-                <div className="mt-4">
-                  <Link
-                    href="/signin"
-                    className="flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-zinc-800 hover:bg-black/5 transition
-                               dark:text-zinc-100 dark:hover:bg-white/10"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    <PersonIcon size={20} />
-                    Sign in
-                  </Link>
-                </div>
-              )}
             </ul>
 
-            {/* Optional: CTA */}
             <div className="mt-6 rounded-2xl border border-black/10 p-4 dark:border-white/10 dark:bg-white/5">
               <p className="text-sm text-zinc-600 dark:text-zinc-300">
                 Keep your streak alive — log a session today 🔥
