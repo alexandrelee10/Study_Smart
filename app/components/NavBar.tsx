@@ -304,16 +304,16 @@ const NavBar = () => {
                   </div>
                 </div>
 
-                {/* ✅ Quick links: Dashboard + Settings */}
+                {/* Quick links: Dashboard + Settings */}
                 <div className="mb-4 grid grid-cols-2 gap-2">
                   <Link
-                    href="/dashboard"
+                    href="/billing"
                     onClick={() => setMobileOpen(false)}
                     className="rounded-xl border border-black/10 px-4 py-3 text-sm font-medium
                                hover:bg-black/5 transition
                                dark:border-white/10 dark:hover:bg-white/10"
                   >
-                    Dashboard
+                    Billing
                   </Link>
                   <Link
                     href="/settings"
