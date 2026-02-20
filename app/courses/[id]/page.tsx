@@ -6,6 +6,7 @@ import { prisma } from "@/app/lib/prisma";
 import FooterPage from "@/app/components/Footer";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth-options";
+export const metadata = {title: "Course"}
 
 const formatEnum = (value?: string | null) =>
   (value ?? "OTHER").split("_").join(" ");

@@ -1,6 +1,6 @@
 import LoginForm from "../components/form/LoginForm";
 
-export const metadata = { title: "Sign in | StudySmart" };
+export const metadata = { title: "Sign in" };
 
 export default async function SignInPage({
   searchParams,

@@ -6,7 +6,7 @@ import { authOptions } from "@/app/lib/auth-options";
 import { prisma } from "@/app/lib/prisma";
 import FooterPage from "../components/Footer";
 
-export const metadata = { title: "Study Smart | My Courses" };
+export const metadata = { title: "My Courses" };
 
 function prettyEnum(v?: string | null) {
   if (!v) return "Other";

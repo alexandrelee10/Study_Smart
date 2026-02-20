@@ -6,7 +6,7 @@ import { prisma } from "@/app/lib/prisma";
 import FooterPage from "../components/Footer";
 import StudyTimerClient from "./StudyTimerClient";
 
-export const metadata = { title: "Study Smart | Study Session" };
+export const metadata = { title: "Study Session" };
 
 export default async function StudyPage() {
   const session = await getServerSession(authOptions);

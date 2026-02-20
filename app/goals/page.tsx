@@ -6,7 +6,7 @@ import { prisma } from "@/app/lib/prisma";
 import FooterPage from "../components/Footer";
 import PlanClient, { type PlanItemDTO } from "./PlanClient";
 
-export const metadata = { title: "Study Smart | Today's Plan" };
+export const metadata = { title: "Today's Plan" };
 
 function startOfDay(d: Date) {
   const x = new Date(d);

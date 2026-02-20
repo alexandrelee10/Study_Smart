@@ -14,7 +14,7 @@ import studySessionIcon from "@/public/assets/dashboard/study_session.png";
 import coursesIcon from "@/public/assets/dashboard/courses.png";
 import calendarIcon from "@/public/assets/dashboard/calendar.png";
 
-export const metadata = { title: "Study Smart | Dashboard" };
+export const metadata = { title: "Dashboard" };
 
 /* ---------- date/helpers (server safe) ---------- */
 
