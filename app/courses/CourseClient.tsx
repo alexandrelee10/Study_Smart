@@ -306,12 +306,39 @@ export default function CoursesClient({
                       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
                         {c.description ?? "Open this course to see lessons and your progress."}
                       </p>
-
                       <div className="mt-4 grid grid-cols-1 gap-2">
-                        {/* ✅ Only show Add button on Explore AND only if not already enrolled */}
-                        {mode === "explore" && !isEnrolled ? (
-                          <EnrollButton courseId={c.id} onAdded={handleAdded} />
-                        ) : null}
+                        {mode === "explore" ? (
+                          <EnrollButton
+                            courseId={c.id}
+                            isEnrolled={isEnrolled}
+                            onAdded={handleAdded}
+                            onRemoved={(id) => {
+                              setEnrolledSet((prev) => {
+                                const next = new Set(prev);
+                                next.delete(id);
+                                return next;
+                              });
+                              showToast("Removed ✓");
+                            }}
+                          />
+                        ) : (
+                          <EnrollButton
+                            courseId={c.id}
+                            isEnrolled={true}
+                            onRemoved={(id) => {
+                              setEnrolledSet((prev) => {
+                                const next = new Set(prev);
+                                next.delete(id);
+                                return next;
+                              });
+                              showToast("Removed ✓");
+                            }}
+                          />
+                        )}
+
+                        <div className="text-sm font-medium text-blue-600 dark:text-blue-400 group-hover:underline text-center">
+                          Open →
+                        </div>
                       </div>
                     </div>
                   </Link>

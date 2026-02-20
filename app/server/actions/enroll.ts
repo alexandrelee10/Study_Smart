@@ -21,3 +21,15 @@ export async function enrollInCourse(courseId: string) {
   revalidatePath("/courses");
   revalidatePath("/my-courses");
 }
+
+export async function removeEnrollment(courseId: string) {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id as string | undefined;
+  if (!userId) throw new Error("Unauthorized");
+
+  await prisma.enrollment.delete({
+    where: { userId_courseId: { userId, courseId } },
+  });
+
+  revalidatePath("/courses");
+}
