@@ -161,6 +161,8 @@ const coursesData = [
   },
 ] as const;
 
+
+
 const courses = await Promise.all(
   coursesData.map((c) =>
     prisma.course.upsert({
@@ -202,6 +204,261 @@ const [
 ] = courses;
 
   
+// ---------- LESSONS  ----------
+const lessonPairs = [
+  {
+    courseId: cs.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Getting Started",
+        description: "Course overview, expectations, and how to study effectively for this subject.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: Core Foundations",
+        description: "Key fundamentals to build confidence before moving into harder topics.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+  {
+    courseId: math.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Course Setup + Basics",
+        description: "Quick refresher on prerequisites and the most important concepts you’ll use daily.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: Problem-Solving Patterns",
+        description: "How to approach problems step-by-step with accuracy and speed.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+  {
+    courseId: cs2.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Why Data Structures Matter",
+        description: "Big picture: how structures power real apps and why interviews care.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: Arrays vs Linked Lists",
+        description: "Tradeoffs, runtime, memory, and when to choose each.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+  {
+    courseId: math2.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Functions Review",
+        description: "Function behavior, notation, transformations—your toolkit before calculus.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: Trig Essentials",
+        description: "Core trig identities, unit circle intuition, and solving basic trig equations.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+  {
+    courseId: reading1.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Active Reading",
+        description: "Annotation, questioning the text, and pulling meaning quickly.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: Inference & Tone",
+        description: "How to read between the lines and identify author intent.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+  {
+    courseId: english1.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Thesis + Structure",
+        description: "Write strong thesis statements and outline essays that flow cleanly.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: Editing for Clarity",
+        description: "Fix wordiness, improve transitions, and tighten arguments.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+  {
+    courseId: english2.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Research Basics",
+        description: "Finding credible sources, note-taking, and avoiding weak evidence.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: Citations & Synthesis",
+        description: "Integrate sources smoothly and cite correctly without sounding robotic.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+  {
+    courseId: science1.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Cells & Life Basics",
+        description: "Core biology foundations—cells, organelles, and what they do.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: DNA & Genetics Intro",
+        description: "Genes, traits, basic inheritance, and how to think through problems.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+  {
+    courseId: science2.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Atoms & Bonding",
+        description: "Atomic structure, periodic trends, and why bonding happens.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: Stoichiometry Starter",
+        description: "Moles, balancing reactions, and step-by-step calculation habits.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+  {
+    courseId: history1.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Timelines & Cause/Effect",
+        description: "How historians connect events and build narratives from facts.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: Writing Strong Responses",
+        description: "Answer prompts with context + evidence instead of summaries.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+  {
+    courseId: nursing1.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Patient Safety Essentials",
+        description: "Safety basics, infection control, and clinical mindset.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: Vital Signs & Assessment",
+        description: "Vitals, what’s normal vs abnormal, and what to do next.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+  {
+    courseId: social1.id,
+    lessons: [
+      {
+        order: 0,
+        name: "Lesson 1: Content Strategy Basics",
+        description: "How to plan content that matches goals and audience.",
+        isPublished: true,
+        isPreview: true,
+      },
+      {
+        order: 1,
+        name: "Lesson 2: Analytics & Iteration",
+        description: "Measure what matters and improve campaigns using data.",
+        isPublished: true,
+        isPreview: false,
+      },
+    ],
+  },
+] as const;
+
+await Promise.all(
+  lessonPairs.flatMap(({ courseId, lessons }) =>
+    lessons.map((l) =>
+      prisma.lesson.upsert({
+        where: { courseId_order: { courseId, order: l.order } },
+        update: {
+          name: l.name,
+          description: l.description,
+          isPublished: l.isPublished,
+          isPreview: l.isPreview,
+        },
+        create: {
+          courseId,
+          order: l.order,
+          name: l.name,
+          description: l.description,
+          isPublished: l.isPublished,
+          isPreview: l.isPreview,
+        },
+      })
+    )
+  )
+);
 
   // ---------- ENROLLMENTS ----------
   await prisma.enrollment.createMany({

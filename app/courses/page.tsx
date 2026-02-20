@@ -4,7 +4,7 @@ import { authOptions } from "@/app/lib/auth-options";
 import { prisma } from "@/app/lib/prisma";
 import CoursesClient from "./CourseClient";
 
-export const metadata = { title: "Study Smart | Courses" };
+export const metadata = { title: "Courses" };
 
 export default async function CoursesPage({
   searchParams,
