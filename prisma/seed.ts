@@ -36,6 +36,19 @@ async function main() {
       password,
     },
   });
+  const adminPassword = await bcrypt.hash("Admin123!", 10)
+
+  const adminUser = await prisma.user.upsert({
+    where: {email: "admin@studysmart.dev"},
+    update: {},
+    create: {
+      username:"admin",
+      firstName: "Admin",
+      lastName: "Example",
+      email: "admin@studysmart.dev",
+      password
+    },
+  });
 
 // ---------- COURSES ----------
 const coursesData = [
