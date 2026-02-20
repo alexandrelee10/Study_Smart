@@ -50,7 +50,7 @@ function Badge({
     </span>
   );
 }
-
+// Display nonuser page for courses
 export default function CoursesClient({
   courseContent,
   title = "Explore our courses",
@@ -70,12 +70,12 @@ export default function CoursesClient({
   const [level, setLevel] = useState("");
   const [sort, setSort] = useState("");
 
-  // ✅ local enrolled set for instant UI updates (optimistic)
+  // local enrolled set for instant UI updates (optimistic)
   const [enrolledSet, setEnrolledSet] = useState<Set<string>>(
     () => new Set(enrolledCourseIds)
   );
 
-  // ✅ tiny toast
+  // tiny toast
   const [toast, setToast] = useState<string | null>(null);
   const showToast = (msg: string) => {
     setToast(msg);
@@ -312,10 +312,6 @@ export default function CoursesClient({
                         {mode === "explore" && !isEnrolled ? (
                           <EnrollButton courseId={c.id} onAdded={handleAdded} />
                         ) : null}
-
-                        <div className="text-sm font-medium text-blue-600 dark:text-blue-400 group-hover:underline text-center">
-                          Open →
-                        </div>
                       </div>
                     </div>
                   </Link>
