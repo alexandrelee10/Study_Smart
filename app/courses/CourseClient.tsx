@@ -335,10 +335,6 @@ export default function CoursesClient({
                             }}
                           />
                         )}
-
-                        <div className="text-sm font-medium text-blue-600 dark:text-blue-400 group-hover:underline text-center">
-                          Open →
-                        </div>
                       </div>
                     </div>
                   </Link>

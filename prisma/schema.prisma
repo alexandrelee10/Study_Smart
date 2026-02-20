@@ -108,6 +108,8 @@ model User {
   dailyProgresses DailyProgress[]
 
   planItems PlanItem[]
+
+  lessonProgresses LessonProgress[]
 }
 
 /// ------- Courses -------
@@ -291,15 +293,32 @@ model DailyProgress {
 
 /// ------- Lesson -------
 model Lesson {
-  id          String @id @default(cuid())
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
   name        String
-  description String
+  description String?
+  order       Int      @default(0)
+  isPublished Boolean  @default(true)
+  isPreview   Boolean  @default(false)
 
-  courseId String
-  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  date        DateTime
-  startedAt   DateTime
+  progress    LessonProgress[]
+
+  @@index([courseId])
+  @@unique([courseId, order])
+}
+/// ------- Lesson Progress -------
+model LessonProgress {
+  id        String @id @default(cuid())
+  userId    String
+  lessonId  String
+
+  date        DateTime?    // optional planned date
+  startedAt   DateTime?
   completedAt DateTime?
 
   durationMinutes Int?
@@ -308,10 +327,15 @@ model Lesson {
   status     LessonStatus @default(NOT_STARTED)
   difficulty Difficulty?
 
-  isPublished Boolean
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
 }
 
 /// --- Plan Item --- 
