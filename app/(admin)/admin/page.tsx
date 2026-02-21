@@ -105,17 +105,6 @@ export default async function AdminPage() {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              {/* ✅ back to normal dashboard */}
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium
-                           border border-black/10 dark:border-white/10
-                           bg-white/70 dark:bg-white/5
-                           text-zinc-800 dark:text-zinc-100
-                           hover:bg-black/5 dark:hover:bg-white/10 transition"
-              >
-                ← Dashboard
-              </Link>
             </div>
           </div>
         </section>
@@ -330,7 +319,7 @@ function AdminActionCard({
     >
       {/* IMAGE AREA */}
       <div className={`h-[180px] w-full flex items-center justify-center ${toneBg}`}>
-        <div className="relative w-full h-full p-6">
+        <div className="relative w-full h-full p-6 bg-white">
           <Image
             src={icon}
             alt=""

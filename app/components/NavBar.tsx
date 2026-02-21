@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,11 +10,6 @@ import { useSession, signOut } from "next-auth/react";
 
 const NavBar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
-
-  const links = [
-    { name: "Courses", href: "/courses" },
-    { name: "Calendar", href: "/calendar" },
-  ];
 
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -44,12 +39,37 @@ const NavBar = () => {
       ? "/assets/logo/logo_dark.svg"
       : "/assets/logo/logo.svg";
 
-  const user = session?.user;
+  const user = session?.user as any;
+  const role = user?.role as string | undefined;
+
+  // ✅ "Admin mode" = admin user AND browsing admin section
+  const isAdminUser = role === "ADMIN";
+  const isAdminMode = isAdminUser && pathname?.startsWith("/admin");
+
+  // ✅ Where logo should go depending on mode
+  const logoHref = isAdminMode ? "/admin" : "/dashboard";
+
+  // ✅ Links depend on mode
+  const links = useMemo(() => {
+    if (isAdminMode) {
+      return [
+        { name: "Courses", href: "/admin/courses" }, // manage courses
+        { name: "Lessons", href: "/admin/lessons" },
+        { name: "Calendar", href: "/admin/calendar" }, // or keep as /calendar if you don’t have admin/calendar
+      ];
+    }
+
+    return [
+      { name: "Courses", href: "/courses" },
+      { name: "Calendar", href: "/calendar" },
+    ];
+  }, [isAdminMode]);
+
   const userLabel =
     (user?.name as string | undefined) ||
-    (user?.email ? user.email.split("@")[0] : "");
+    (user?.email ? String(user.email).split("@")[0] : "");
 
-  const userImage = user?.image ?? "";
+  const userImage = (user?.image as string | null | undefined) ?? "";
 
   const PersonIcon = ({ size = 18 }: { size?: number }) => (
     <svg
@@ -74,12 +94,16 @@ const NavBar = () => {
     await signOut({ callbackUrl: "/signin?signedOut=1" });
   };
 
+  // ✅ Optional: quick toggle link for admins (switch between dashboards)
+  const dashboardHref = isAdminMode ? "/dashboard" : "/admin";
+  const dashboardLabel = isAdminMode ? "Dashboard" : "Admin";
+
   return (
     <nav className="fixed top-0 w-full z-50">
       <div className="bg-[#FAFAFA] shadow-md dark:bg-zinc-950/90 dark:backdrop-blur dark:border-b dark:border-white/10">
         <div className="max-w-6xl mx-auto h-20 px-4 sm:px-8 lg:px-10 flex items-center justify-between gap-6">
-          {/* Logo */}
-          <Link href="/" className="relative w-60 h-24">
+          {/* ✅ Logo (routes to admin dashboard if in admin mode) */}
+          <Link href={logoHref} className="relative w-60 h-24">
             <Image
               src={logoSrc}
               alt="logo"
@@ -111,6 +135,17 @@ const NavBar = () => {
                 );
               })}
             </ul>
+
+            {/* ✅ Admin can switch modes */}
+            {isAdminUser ? (
+              <Link
+                href={dashboardHref}
+                className="rounded-xl border border-black/10 dark:border-white/10 px-3 py-2 text-sm font-medium
+                           text-zinc-700 dark:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/10 transition"
+              >
+                {dashboardLabel}
+              </Link>
+            ) : null}
 
             {/* Person icon */}
             {status === "loading" ? (
@@ -159,6 +194,7 @@ const NavBar = () => {
                       </p>
                     </div>
 
+                    {/* Dashboard */}
                     <Link
                       href="/dashboard"
                       className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
@@ -169,16 +205,7 @@ const NavBar = () => {
                       Dashboard
                     </Link>
 
-                    {/* ✅ Settings added */}
-                    <Link
-                      href="/settings"
-                      className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
-                                 dark:text-zinc-100 dark:hover:bg-white/10"
-                      onClick={() => setProfileOpen(false)}
-                      role="menuitem"
-                    >
-                      Settings
-                    </Link>
+                    {/* Billing */}
                     <Link
                       href="/billing"
                       className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
@@ -187,6 +214,16 @@ const NavBar = () => {
                       role="menuitem"
                     >
                       Billing
+                    </Link>
+                    {/* Settings */}
+                    <Link
+                      href="/settings"
+                      className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
+                                 dark:text-zinc-100 dark:hover:bg-white/10"
+                      onClick={() => setProfileOpen(false)}
+                      role="menuitem"
+                    >
+                      Settings
                     </Link>
 
                     <button
@@ -270,7 +307,7 @@ const NavBar = () => {
           </div>
 
           <div className="p-4">
-            {/* ✅ User header (mobile) */}
+            {/* User header (mobile) */}
             {status === "loading" ? (
               <div className="mb-4 rounded-2xl border border-black/10 px-4 py-3 text-sm text-zinc-600 dark:border-white/10 dark:text-zinc-300">
                 Loading profile…
@@ -304,7 +341,20 @@ const NavBar = () => {
                   </div>
                 </div>
 
-                {/* Quick links: Dashboard + Settings */}
+                {/* ✅ Admin mode switch (mobile) */}
+                {isAdminUser ? (
+                  <Link
+                    href={dashboardHref}
+                    onClick={() => setMobileOpen(false)}
+                    className="mb-4 flex items-center justify-center rounded-xl border border-black/10 px-4 py-3 text-sm font-medium
+                               hover:bg-black/5 transition
+                               dark:border-white/10 dark:hover:bg-white/10"
+                  >
+                    {dashboardLabel}
+                  </Link>
+                ) : null}
+
+                {/* Quick links (mobile) */}
                 <div className="mb-4 grid grid-cols-2 gap-2">
                   <Link
                     href="/billing"
@@ -326,7 +376,6 @@ const NavBar = () => {
                   </Link>
                 </div>
 
-                {/* ✅ Mobile sign out */}
                 <button
                   type="button"
                   onClick={doSignOut}
