@@ -29,11 +29,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const ok = await bcrypt.compare(password, user.password);
         if (!ok) return null;
 
+        // ✅ include id + role so JWT/session can carry them
         return {
           id: user.id,
           email: user.email,
           username: user.username,
           image: user.image ?? null,
+          role: (user as any).role ?? "STUDENT",
         };
       },
     }),
@@ -41,16 +43,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   callbacks: {
     async jwt({ token, user }) {
+      // ✅ runs on sign in (user exists), then on future requests (user is undefined)
       if (user) {
+        token.id = (user as any).id;
+        token.role = (user as any).role ?? "STUDENT";
         token.username = (user as any).username;
         token.image = (user as any).image ?? null;
       }
       return token;
     },
+
     async session({ session, token }) {
       if (session.user) {
-        session.user.username = token.username as string;
-        session.user.image = token.image as string | null;
+        // ✅ expose to session.user
+        (session.user as any).id = token.id ?? token.sub;
+        (session.user as any).role = token.role ?? "STUDENT";
+        (session.user as any).username = token.username as string;
+        (session.user as any).image = (token.image as string | null) ?? null;
       }
       return session;
     },

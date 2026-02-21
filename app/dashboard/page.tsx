@@ -1,4 +1,4 @@
-// app/dashboard/page.tsx (or wherever your DashboardPage lives)
+// app/dashboard/page.tsx
 
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
@@ -10,9 +10,9 @@ import { prisma } from "@/app/lib/prisma";
 
 import owl from "@/public/owl.png";
 
-import studySessionIcon from "@/public/assets/dashboard/study_session.png";
-import coursesIcon from "@/public/assets/dashboard/courses.png";
-import calendarIcon from "@/public/assets/dashboard/calendar.png";
+import studySession from "@/public/assets/admin/dash/study-session.jpg"
+import courses from "@/public/assets/admin/dash/courses.png"
+import calendarImg from "@/public/assets/admin/dash/calendar-image.png"
 
 export const metadata = { title: "Dashboard" };
 
@@ -74,6 +74,8 @@ export default async function DashboardPage() {
   // IMPORTANT: your NextAuth session must include user.id
   const userId = (session.user as any).id as string;
   if (!userId) redirect("/signin");
+
+  const role = (session.user as any)?.role as string | undefined;
 
   const username =
     session.user.name ||
@@ -172,16 +174,29 @@ export default async function DashboardPage() {
               </div>
             </div>
 
+            {/* Admin can access admin dashboard */}
             <div className="hidden md:flex items-center gap-3">
+              {role === "ADMIN" ? (
+                <Link
+                  href="/admin"
+                  className="inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium
+                             border border-black/10 dark:border-white/10
+                             bg-white/70 dark:bg-white/5
+                             text-zinc-800 dark:text-zinc-100
+                             hover:bg-black/5 dark:hover:bg-white/10 transition"
+                >
+                  Admin Panel
+                </Link>
+              ) : null}
             </div>
           </div>
         </section>
 
         {/* Quick actions (big image cards like the mock) */}
         <section className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <ActionCard href="/study" icon={studySessionIcon} tone="orange" />
-          <ActionCard href="/courses" icon={coursesIcon} tone="green" />
-          <ActionCard href="/calendar" icon={calendarIcon} tone="purple" />
+          <ActionCard href="/study" icon={studySession} tone="orange" label="Start Study" />
+          <ActionCard href="/courses" icon={courses} tone="green" label="View Courses" />
+          <ActionCard href="/calendar" icon={calendarImg} tone="purple" label="View Calendar" />
         </section>
 
         {/* Stats strip (mock-style bar) */}
@@ -269,11 +284,10 @@ export default async function DashboardPage() {
                 recentSessions.map((s) => (
                   <ActivityRow
                     key={s.id}
-                    title={`${s.course?.name ?? "General"} — ${
-                      s.notes?.trim()
+                    title={`${s.course?.name ?? "General"} — ${s.notes?.trim()
                         ? s.notes.trim().slice(0, 40) + (s.notes.trim().length > 40 ? "…" : "")
                         : "Study session"
-                    }`}
+                      }`}
                     meta={`${s.durationMin} min • ${formatRelativeDay(s.startedAt)}`}
                   />
                 ))
@@ -334,42 +348,52 @@ function ActionCard({
   href,
   icon,
   tone,
+  label,
 }: {
   href: string;
   icon: StaticImageData;
   tone: "orange" | "green" | "purple";
+  label: string;
 }) {
   const toneBg =
     tone === "orange"
-      ? "from-orange-500/18 via-orange-400/10 to-transparent dark:from-orange-400/16"
+      ? "bg-orange-50 dark:bg-orange-500/5"
       : tone === "green"
-      ? "from-emerald-500/18 via-emerald-400/10 to-transparent dark:from-emerald-400/16"
-      : "from-violet-500/18 via-violet-400/10 to-transparent dark:from-violet-400/16";
+        ? "bg-emerald-50 dark:bg-emerald-500/5"
+        : "bg-violet-50 dark:bg-violet-500/5";
 
   return (
     <Link
       href={href}
       className="
-        relative h-[220px] w-full
         rounded-3xl overflow-hidden
         border border-black/10 dark:border-white/10
         bg-white dark:bg-zinc-900/50
         shadow-sm
         hover:shadow-md hover:-translate-y-0.5
         transition
-        group
       "
     >
-      <div className={`absolute inset-0 bg-gradient-to-br ${toneBg}`} />
-      <div className="absolute inset-0 p-3">
-        <Image
-          src={icon}
-          alt=""
-          fill
-          className="object-contain transition group-hover:scale-105"
-          sizes="(max-width:1068px) 400vw, 43vw"
-          priority
-        />
+      {/* Image */}
+      <div className={`h-[170px] w-full flex items-center justify-center ${toneBg}`}>
+        <div className="relative w-full h-full p-6">
+          <Image
+            src={icon}
+            alt={label}
+            fill
+            className="object-contain"
+            sizes="(max-width:768px) 100vw, 33vw"
+            priority
+          />
+        </div>
+      </div>
+
+      {/* Text (completely under image) */}
+      <div className="px-5 py-4 border-t border-black/10 dark:border-white/10 text-center">
+        <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+          {label}
+        </p>
+        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Open →</p>
       </div>
     </Link>
   );
