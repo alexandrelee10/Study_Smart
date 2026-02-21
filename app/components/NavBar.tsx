@@ -42,12 +42,15 @@ const NavBar = () => {
   const user = session?.user as any;
   const role = user?.role as string | undefined;
 
-  // ✅ "Admin mode" = admin user AND browsing admin section
+  // "Admin mode" = admin user AND browsing admin section
   const isAdminUser = role === "ADMIN";
   const isAdminMode = isAdminUser && pathname?.startsWith("/admin");
 
   // ✅ Where logo should go depending on mode
-  const logoHref = isAdminMode ? "/admin" : "/dashboard";
+const isSignedIn = !!session?.user;
+
+// Logo routing 
+const logoHref = !isSignedIn ? "/" : isAdminMode ? "/admin" : "/dashboard";
 
   // ✅ Links depend on mode
   const links = useMemo(() => {
