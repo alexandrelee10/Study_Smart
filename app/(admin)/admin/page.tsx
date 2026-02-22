@@ -1,4 +1,3 @@
-// app/(admin)/admin/page.tsx
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -128,7 +127,7 @@ export default async function AdminPage() {
             icon={calendarImg}
             tone="purple"
             label="Analytics (Soon)"
-            disabled
+            
           />
         </section>
 

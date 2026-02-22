@@ -79,24 +79,35 @@ export default async function AdminAnalyticsPage() {
 
   // --- Top courses by study minutes (StudySession.durationMin) ---
   // If your StudySession model differs, adjust `_sum: { durationMin: true }` + field names.
-  const topByMinutesAgg = await prisma.studySession.groupBy({
-    by: ["courseId"],
-    _sum: { durationMin: true },
-    orderBy: { _sum: { durationMin: "desc" } },
-    take: 10,
-  });
+const topByMinutesAgg = await prisma.studySession.groupBy({
+  by: ["courseId"],
+  _sum: { durationMin: true },
+  orderBy: { _sum: { durationMin: "desc" } },
+  take: 10,
+});
 
-  const courseIds = topByMinutesAgg.map((x) => x.courseId).filter(Boolean);
-  const coursesForMinutes = await prisma.course.findMany({
-    where: { id: { in: courseIds } },
-    select: { id: true, name: true, code: true },
-  });
-  const courseMap = new Map(coursesForMinutes.map((c) => [c.id, c]));
+// ✅ TS-safe filter: turns (string | null)[] into string[]
+const isString = (v: unknown): v is string => typeof v === "string" && v.length > 0;
 
-  const topCoursesByMinutes = topByMinutesAgg.map((row) => ({
-    courseId: row.courseId,
+const courseIds = topByMinutesAgg
+  .map((x) => x.courseId)
+  .filter(isString);
+
+const coursesForMinutes = await prisma.course.findMany({
+  where: { id: { in: courseIds } },
+  select: { id: true, name: true, code: true },
+});
+
+const courseMap = new Map(coursesForMinutes.map((c) => [c.id, c]));
+
+
+
+const topCoursesByMinutes = topByMinutesAgg
+  .filter((row): row is typeof row & { courseId: string } => isString(row.courseId))
+  .map((row) => ({
+    courseId: row.courseId, // ✅ now string
     minutes: row._sum.durationMin ?? 0,
-    course: courseMap.get(row.courseId),
+    course: courseMap.get(row.courseId), // ✅ now OK
   }));
 
   // --- Recent enrollments ---
