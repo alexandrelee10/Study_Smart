@@ -98,7 +98,6 @@ const NavBar = () => {
     await signOut({ callbackUrl: "/signin?signedOut=1" });
   };
 
-  // Optional: quick toggle link for admins (switch between dashboards)
   const dashboardHref = isAdminMode ? "/dashboard" : "/admin";
   const dashboardLabel = isAdminMode ? "Dashboard" : "Admin";
 
@@ -151,130 +150,132 @@ const NavBar = () => {
               </Link>
             ) : null}
 
-            {/* Person icon */}
-            {status === "loading" ? (
-              <div className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm text-zinc-500 dark:text-zinc-400">
-                Loading…
-              </div>
-            ) : user ? (
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setProfileOpen((v) => !v)}
-                  className="inline-flex items-center justify-center rounded-xl p-2
-                             text-zinc-800 hover:bg-black/5 transition
-                             dark:text-zinc-100 dark:hover:bg-white/10"
-                  aria-haspopup="menu"
-                  aria-expanded={profileOpen}
-                  aria-label="Open profile menu"
-                >
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full overflow-hidden border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5">
-                    {userImage ? (
-                      <Image
-                        src={userImage}
-                        alt="Profile"
-                        width={40}
-                        height={40}
-                        className="h-10 w-10 object-cover"
-                      />
-                    ) : (
-                      <PersonIcon size={18} />
-                    )}
-                  </span>
-                </button>
-
-                {profileOpen && (
-                  <div
-                    className="absolute right-0 mt-2 w-56 rounded-xl border border-black/10 bg-white shadow-lg
-                               dark:bg-zinc-950 dark:border-white/10 overflow-hidden"
-                    role="menu"
-                  >
-                    <div className="px-4 py-3 border-b border-black/10 dark:border-white/10">
-                      <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
-                        {userLabel}
-                      </p>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                        {user.email ?? ""}
-                      </p>
-                    </div>
-
-                    <Link
-                      href="/dashboard"
-                      className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
-                                 dark:text-zinc-100 dark:hover:bg-white/10"
-                      onClick={() => setProfileOpen(false)}
-                      role="menuitem"
-                    >
-                      Dashboard
-                    </Link>
-
-                    <Link
-                      href="/billing"
-                      className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
-                                 dark:text-zinc-100 dark:hover:bg-white/10"
-                      onClick={() => setProfileOpen(false)}
-                      role="menuitem"
-                    >
-                      Billing
-                    </Link>
-
-                    <Link
-                      href="/settings"
-                      className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
-                                 dark:text-zinc-100 dark:hover:bg-white/10"
-                      onClick={() => setProfileOpen(false)}
-                      role="menuitem"
-                    >
-                      Settings
-                    </Link>
-
-                    {/* ✅ Theme switch INSIDE dropdown */}
-                    <button
-                      type="button"
-                      onClick={toggleTheme}
-                      className="w-full flex items-center justify-between px-4 py-3 text-sm
-                                 text-zinc-800 hover:bg-black/5 transition
-                                 dark:text-zinc-100 dark:hover:bg-white/10"
-                      role="menuitem"
-                    >
-                      <span className="flex items-center gap-2">
-                        {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                        Theme
-                      </span>
-
-                      {/* little pill showing state */}
-                      <span className="text-xs font-semibold rounded-full px-2 py-1
-                                       bg-zinc-100 text-zinc-800
-                                       dark:bg-white/10 dark:text-zinc-100">
-                        {mounted ? (isDark ? "Dark" : "Light") : "…"}
-                      </span>
-                    </button>
-
-                    <div className="h-px bg-black/10 dark:bg-white/10" />
-
-                    <button
-                      type="button"
-                      onClick={doSignOut}
-                      className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition
-                                 dark:text-red-400 dark:hover:bg-red-500/10"
-                      role="menuitem"
-                    >
-                      Sign out
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Link
-                href="/signin"
+            {/* ✅ Right */}
+            <div className="flex items-center gap-2">
+              {/* Theme toggle */}
+              <button
+                type="button"
+                onClick={toggleTheme}
                 className="inline-flex items-center justify-center rounded-xl p-2
                            text-zinc-800 hover:bg-black/5 transition
                            dark:text-zinc-100 dark:hover:bg-white/10"
-                aria-label="Sign in"
+                aria-label="Toggle theme"
               >
-                <PersonIcon size={18} />
-              </Link>
-            )}
+                {mounted ? (
+                  isDark ? (
+                    <Moon className="h-5 w-5" />
+                  ) : (
+                    <Sun className="h-5 w-5" />
+                  )
+                ) : (
+                  // prevents layout jump during hydration
+                  <Sun className="h-5 w-5 opacity-0" />
+                )}
+              </button>
+
+              {/* Profile / Sign in */}
+              {status === "loading" ? (
+                <div className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-zinc-500 dark:text-zinc-400">
+                  Loading…
+                </div>
+              ) : user ? (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setProfileOpen((v) => !v)}
+                    className="inline-flex items-center justify-center rounded-xl p-2
+                               text-zinc-800 hover:bg-black/5 transition
+                               dark:text-zinc-100 dark:hover:bg-white/10"
+                    aria-haspopup="menu"
+                    aria-expanded={profileOpen}
+                    aria-label="Open profile menu"
+                  >
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full overflow-hidden border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5">
+                      {userImage ? (
+                        <Image
+                          src={userImage}
+                          alt="Profile"
+                          width={40}
+                          height={40}
+                          className="h-10 w-10 object-cover"
+                        />
+                      ) : (
+                        <PersonIcon size={18} />
+                      )}
+                    </span>
+                  </button>
+
+                  {profileOpen && (
+                    <div
+                      className="absolute right-0 mt-2 w-56 rounded-xl border border-black/10 bg-white shadow-lg
+                                 dark:bg-zinc-950 dark:border-white/10 overflow-hidden"
+                      role="menu"
+                    >
+                      <div className="px-4 py-3 border-b border-black/10 dark:border-white/10">
+                        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                          {userLabel}
+                        </p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+                          {user.email ?? ""}
+                        </p>
+                      </div>
+
+                      <Link
+                        href="/dashboard"
+                        className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
+                                   dark:text-zinc-100 dark:hover:bg-white/10"
+                        onClick={() => setProfileOpen(false)}
+                        role="menuitem"
+                      >
+                        Dashboard
+                      </Link>
+
+                      <Link
+                        href="/billing"
+                        className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
+                                   dark:text-zinc-100 dark:hover:bg-white/10"
+                        onClick={() => setProfileOpen(false)}
+                        role="menuitem"
+                      >
+                        Billing
+                      </Link>
+
+                      <Link
+                        href="/settings"
+                        className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
+                                   dark:text-zinc-100 dark:hover:bg-white/10"
+                        onClick={() => setProfileOpen(false)}
+                        role="menuitem"
+                      >
+                        Settings
+                      </Link>
+
+                      <div className="h-px bg-black/10 dark:bg-white/10" />
+
+                      <button
+                        type="button"
+                        onClick={doSignOut}
+                        className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition
+                                   dark:text-red-400 dark:hover:bg-red-500/10"
+                        role="menuitem"
+                      >
+                        Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  href="/signin"
+                  className="inline-flex items-center justify-center rounded-xl p-2
+                             text-zinc-800 hover:bg-black/5 transition
+                             dark:text-zinc-100 dark:hover:bg-white/10"
+                  aria-label="Sign in"
+                >
+                  <PersonIcon size={18} />
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Mobile Hamburger */}
@@ -340,10 +341,7 @@ const NavBar = () => {
               </div>
             ) : user ? (
               <>
-                <div
-                  className="mb-3 flex items-center gap-3 rounded-2xl border border-black/10 px-4 py-3
-                             dark:border-white/10"
-                >
+                <div className="mb-3 flex items-center gap-3 rounded-2xl border border-black/10 px-4 py-3 dark:border-white/10">
                   <span className="inline-flex h-10 w-10 items-center justify-center rounded-full overflow-hidden border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5">
                     {userImage ? (
                       <Image
@@ -380,7 +378,7 @@ const NavBar = () => {
                   </Link>
                 ) : null}
 
-                {/* ✅ Theme toggle (mobile) */}
+                {/* Theme toggle (mobile) */}
                 <button
                   type="button"
                   onClick={toggleTheme}
@@ -392,9 +390,7 @@ const NavBar = () => {
                     {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
                     Theme
                   </span>
-                  <span className="text-xs font-semibold rounded-full px-2 py-1
-                                   bg-zinc-100 text-zinc-800
-                                   dark:bg-white/10 dark:text-zinc-100">
+                  <span className="text-xs font-semibold rounded-full px-2 py-1 bg-zinc-100 text-zinc-800 dark:bg-white/10 dark:text-zinc-100">
                     {mounted ? (isDark ? "Dark" : "Light") : "…"}
                   </span>
                 </button>
@@ -433,16 +429,35 @@ const NavBar = () => {
                 </button>
               </>
             ) : (
-              <Link
-                href="/signin"
-                className="mb-4 flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium
-                           text-zinc-800 hover:bg-black/5 transition
-                           dark:text-zinc-100 dark:hover:bg-white/10"
-                onClick={() => setMobileOpen(false)}
-              >
-                <PersonIcon size={20} />
-                Sign in
-              </Link>
+              <>
+                {/* ✅ Theme toggle still visible even when signed out (mobile) */}
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="mb-3 w-full flex items-center justify-between rounded-xl border border-black/10 px-4 py-3 text-sm font-medium
+                             hover:bg-black/5 transition
+                             dark:border-white/10 dark:hover:bg-white/10"
+                >
+                  <span className="flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+                    {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                    Theme
+                  </span>
+                  <span className="text-xs font-semibold rounded-full px-2 py-1 bg-zinc-100 text-zinc-800 dark:bg-white/10 dark:text-zinc-100">
+                    {mounted ? (isDark ? "Dark" : "Light") : "…"}
+                  </span>
+                </button>
+
+                <Link
+                  href="/signin"
+                  className="mb-4 flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium
+                             text-zinc-800 hover:bg-black/5 transition
+                             dark:text-zinc-100 dark:hover:bg-white/10"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <PersonIcon size={20} />
+                  Sign in
+                </Link>
+              </>
             )}
 
             <ul className="flex flex-col gap-2">
