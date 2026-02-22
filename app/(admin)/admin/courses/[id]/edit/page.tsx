@@ -1,27 +1,63 @@
+// app/(admin)/admin/courses/[id]/edit/page.tsx
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/app/lib/prisma";
 import { requireAdmin } from "@/app/lib/require-admin";
-import { updateCourse } from "../../action";
+import { revalidatePath } from "next/cache";
+import { CourseType, EducationLevel, CourseDifficulty } from "@prisma/client";
 
 export const metadata = { title: "Admin | Edit Course" };
 
 export default async function EditCoursePage({
   params,
 }: {
-  params: { id?: string };
+  params: Promise<{ id?: string }>;
 }) {
   await requireAdmin();
 
-  const id = params?.id;
+  // ✅ Next.js: params is a Promise in your setup
+  const { id } = await params;
   if (!id) return notFound();
 
   const course = await prisma.course.findUnique({ where: { id } });
   if (!course) return notFound();
 
+  // ✅ Server Action
   async function onUpdateCourse(formData: FormData) {
     "use server";
-    await updateCourse(id, formData); // ✅ use id, not course.id
+    await requireAdmin();
+
+    const name = String(formData.get("name") ?? "").trim();
+    const code = String(formData.get("code") ?? "").trim();
+    const image = String(formData.get("image") ?? "").trim();
+    const description = String(formData.get("description") ?? "").trim();
+
+    const type = String(formData.get("type") ?? "OTHER") as CourseType;
+    const edLevel = String(formData.get("edLevel") ?? "OTHER") as EducationLevel;
+    const difficulty = String(
+      formData.get("difficulty") ?? "MEDIUM"
+    ) as CourseDifficulty;
+
+    if (!name || !code) return;
+
+    await prisma.course.update({
+      where: { id },
+      data: {
+        name,
+        code,
+        image: image || null,
+        description: description || null,
+        type,
+        edLevel,
+        difficulty,
+      },
+    });
+
+    revalidatePath("/admin/courses");
+    revalidatePath(`/admin/courses/${id}/edit`);
+    revalidatePath(`/courses/${id}`);
+
+    redirect("/admin/courses");
   }
 
   return (
@@ -38,6 +74,9 @@ export default async function EditCoursePage({
           <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
             Edit Course
           </h1>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            ID: {course.id}
+          </p>
 
           <form action={onUpdateCourse} className="mt-6 grid grid-cols-1 gap-4">
             <input
@@ -73,7 +112,7 @@ export default async function EditCoursePage({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <select
                 name="type"
-                defaultValue={(course.type ?? "OTHER") as any}
+                defaultValue={course.type ?? "OTHER"}
                 className="rounded-2xl border border-black/10 dark:border-white/10 px-4 py-3 bg-white dark:bg-zinc-950/40"
               >
                 <option value="OTHER">Other</option>
@@ -89,7 +128,7 @@ export default async function EditCoursePage({
 
               <select
                 name="edLevel"
-                defaultValue={(course.edLevel ?? "OTHER") as any}
+                defaultValue={course.edLevel ?? "OTHER"}
                 className="rounded-2xl border border-black/10 dark:border-white/10 px-4 py-3 bg-white dark:bg-zinc-950/40"
               >
                 <option value="OTHER">Other</option>
@@ -100,7 +139,7 @@ export default async function EditCoursePage({
 
               <select
                 name="difficulty"
-                defaultValue={(course.difficulty ?? "MEDIUM") as any}
+                defaultValue={course.difficulty ?? "MEDIUM"}
                 className="rounded-2xl border border-black/10 dark:border-white/10 px-4 py-3 bg-white dark:bg-zinc-950/40"
               >
                 <option value="EASY">Easy</option>

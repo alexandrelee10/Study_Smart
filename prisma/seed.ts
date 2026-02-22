@@ -11,7 +11,6 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import bcrypt from "bcryptjs";
 
-// ✅ REQUIRED for Prisma v7 when adapter-pg is installed
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
