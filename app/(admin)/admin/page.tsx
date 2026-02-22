@@ -126,7 +126,7 @@ export default async function AdminPage() {
             href="/admin/analytics"
             icon={calendarImg}
             tone="purple"
-            label="Analytics (Soon)"
+            label="Analytics"
             
           />
         </section>
@@ -224,7 +224,7 @@ export default async function AdminPage() {
             <div className="p-6 space-y-3">
               <ShortcutRow title="Manage Courses" href="/admin/courses" />
               <ShortcutRow title="Manage Lessons" href="/admin/lessons" />
-              <ShortcutRow title="Enrollments (Soon)" href="/admin/enrollments" disabled />
+              <ShortcutRow title="Enrollments (Soon)" href="/admin/enrollments" />
               <ShortcutRow title="Analytics (Soon)" href="/admin/analytics" disabled />
             </div>
 

@@ -58,7 +58,7 @@ const logoHref = !isSignedIn ? "/" : isAdminMode ? "/admin" : "/dashboard";
       return [
         { name: "Courses", href: "/admin/courses" }, // manage courses
         { name: "Lessons", href: "/admin/lessons" },
-        { name: "Calendar", href: "/admin/calendar" }, // or keep as /calendar if you don’t have admin/calendar
+        { name: "Analytics", href: "/admin/analytics" }, 
       ];
     }
 

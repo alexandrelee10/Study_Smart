@@ -1,12 +1,12 @@
-// app/(admin)/admin/analytics/page.tsx
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/app/lib/prisma";
 import { requireAdmin } from "@/app/lib/require-admin";
+import ChartsClient, { type AnalyticsPoint } from "./ChartsClient";
 
 import owl from "@/public/owl.png";
 
-export const metadata = { title: "Admin | Analytics" };
+export const metadata = { title: "Analytics" };
 
 /* ---------- date helpers ---------- */
 
@@ -24,6 +24,15 @@ function addDays(d: Date, n: number) {
 
 function fmtDate(d: Date) {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function dayKey(d: Date) {
+  const x = startOfDay(d);
+  // Use local day keys to match how users perceive days
+  const y = x.getFullYear();
+  const m = String(x.getMonth() + 1).padStart(2, "0");
+  const day = String(x.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 /* ---------- page ---------- */
@@ -77,38 +86,32 @@ export default async function AdminAnalyticsPage() {
     },
   });
 
-  // --- Top courses by study minutes (StudySession.durationMin) ---
-  // If your StudySession model differs, adjust `_sum: { durationMin: true }` + field names.
-const topByMinutesAgg = await prisma.studySession.groupBy({
-  by: ["courseId"],
-  _sum: { durationMin: true },
-  orderBy: { _sum: { durationMin: "desc" } },
-  take: 10,
-});
+  // --- Top courses by study minutes ---
+  const topByMinutesAgg = await prisma.studySession.groupBy({
+    by: ["courseId"],
+    _sum: { durationMin: true },
+    orderBy: { _sum: { durationMin: "desc" } },
+    take: 10,
+  } as const);
 
-// ✅ TS-safe filter: turns (string | null)[] into string[]
-const isString = (v: unknown): v is string => typeof v === "string" && v.length > 0;
+  const isString = (v: unknown): v is string => typeof v === "string" && v.length > 0;
 
-const courseIds = topByMinutesAgg
-  .map((x) => x.courseId)
-  .filter(isString);
+  const courseIds = topByMinutesAgg.map((x) => x.courseId).filter(isString);
 
-const coursesForMinutes = await prisma.course.findMany({
-  where: { id: { in: courseIds } },
-  select: { id: true, name: true, code: true },
-});
+  const coursesForMinutes = await prisma.course.findMany({
+    where: { id: { in: courseIds } },
+    select: { id: true, name: true, code: true },
+  });
 
-const courseMap = new Map(coursesForMinutes.map((c) => [c.id, c]));
+  const courseMap = new Map(coursesForMinutes.map((c) => [c.id, c]));
 
-
-
-const topCoursesByMinutes = topByMinutesAgg
-  .filter((row): row is typeof row & { courseId: string } => isString(row.courseId))
-  .map((row) => ({
-    courseId: row.courseId, // ✅ now string
-    minutes: row._sum.durationMin ?? 0,
-    course: courseMap.get(row.courseId), // ✅ now OK
-  }));
+  const topCoursesByMinutes = topByMinutesAgg
+    .filter((row): row is typeof row & { courseId: string } => isString(row.courseId))
+    .map((row) => ({
+      courseId: row.courseId,
+      minutes: row._sum.durationMin ?? 0,
+      course: courseMap.get(row.courseId),
+    }));
 
   // --- Recent enrollments ---
   const recentEnrollments = await prisma.enrollment.findMany({
@@ -136,6 +139,58 @@ const topCoursesByMinutes = topByMinutesAgg
     },
   });
 
+  /* ------------------- CHART DATA (last 14 days) ------------------- */
+
+  const chartStart = addDays(todayStart, -13); // 14 days including today
+
+  const [users14, enrollments14, study14] = await Promise.all([
+    prisma.user.findMany({
+      where: { createdAt: { gte: chartStart } },
+      select: { createdAt: true },
+    }),
+    prisma.enrollment.findMany({
+      where: { createdAt: { gte: chartStart } },
+      select: { createdAt: true },
+    }),
+    prisma.studySession.findMany({
+      where: { startedAt: { gte: chartStart } },
+      select: { startedAt: true, durationMin: true },
+    }),
+  ]);
+
+  // init buckets for each day
+  const buckets = new Map<string, AnalyticsPoint>();
+  for (let i = 0; i < 14; i++) {
+    const d = addDays(chartStart, i);
+    const key = dayKey(d);
+    buckets.set(key, {
+      date: fmtDate(d),
+      users: 0,
+      enrollments: 0,
+      studyMinutes: 0,
+    });
+  }
+
+  for (const u of users14) {
+    const key = dayKey(u.createdAt);
+    const b = buckets.get(key);
+    if (b) b.users += 1;
+  }
+
+  for (const e of enrollments14) {
+    const key = dayKey(e.createdAt);
+    const b = buckets.get(key);
+    if (b) b.enrollments += 1;
+  }
+
+  for (const s of study14) {
+    const key = dayKey(s.startedAt);
+    const b = buckets.get(key);
+    if (b) b.studyMinutes += s.durationMin ?? 0;
+  }
+
+  const chartData = Array.from(buckets.values());
+
   return (
     <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
       <div className="mx-auto max-w-6xl px-4 sm:px-8 lg:px-10 pt-24 pb-12">
@@ -162,22 +217,12 @@ const topCoursesByMinutes = topByMinutesAgg
                   Analytics
                 </h1>
                 <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-                  Quick KPIs + activity snapshots. (Charts can come next.)
+                  Quick KPIs + activity snapshots — now with charts.
                 </p>
               </div>
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <Link
-                href="/admin"
-                className="inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium
-                           border border-black/10 dark:border-white/10
-                           bg-white/70 dark:bg-white/5
-                           text-zinc-800 dark:text-zinc-100
-                           hover:bg-black/5 dark:hover:bg-white/10 transition"
-              >
-                ← Admin Panel
-              </Link>
               <Link
                 href="/admin/courses"
                 className="inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium
@@ -192,31 +237,14 @@ const topCoursesByMinutes = topByMinutesAgg
 
         {/* KPI Grid */}
         <section className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <KpiCard
-            title="Users"
-            value={`${totalUsers}`}
-            sub={`+${newUsers7} (7d) • +${newUsers30} (30d)`}
-            tone="emerald"
-          />
-          <KpiCard
-            title="Enrollments"
-            value={`${totalEnrollments}`}
-            sub={`+${newEnrollments7} (7d) • +${newEnrollments30} (30d)`}
-            tone="blue"
-          />
-          <KpiCard
-            title="Courses"
-            value={`${totalCourses}`}
-            sub="Total published catalog"
-            tone="violet"
-          />
-          <KpiCard
-            title="Lessons"
-            value={`${totalLessons}`}
-            sub={`${publishedPct}% published • ${previewLessons} preview`}
-            tone="orange"
-          />
+          <KpiCard title="Users" value={`${totalUsers}`} sub={`+${newUsers7} (7d) • +${newUsers30} (30d)`} tone="emerald" />
+          <KpiCard title="Enrollments" value={`${totalEnrollments}`} sub={`+${newEnrollments7} (7d) • +${newEnrollments30} (30d)`} tone="blue" />
+          <KpiCard title="Courses" value={`${totalCourses}`} sub="Total published catalog" tone="violet" />
+          <KpiCard title="Lessons" value={`${totalLessons}`} sub={`${publishedPct}% published • ${previewLessons} preview`} tone="orange" />
         </section>
+
+        {/* ✅ CHARTS (NEW) */}
+        <ChartsClient data={chartData} />
 
         {/* Top tables */}
         <section className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -375,38 +403,6 @@ const topCoursesByMinutes = topByMinutesAgg
             </div>
           </div>
         </section>
-
-        {/* Footer actions */}
-        <section className="mt-8 rounded-3xl border border-black/10 dark:border-white/10 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
-          <div className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-                Next upgrade: charts + filters
-              </h3>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                Add a 14/30 day chart for enrollments and study minutes once the KPIs feel correct.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Link
-                href="/admin/courses"
-                className="inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium
-                           bg-zinc-900 text-white hover:bg-zinc-800
-                           dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200 transition"
-              >
-                Courses
-              </Link>
-              <Link
-                href="/admin/lessons"
-                className="inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium
-                           border border-black/10 dark:border-white/10
-                           hover:bg-black/5 dark:hover:bg-white/10 transition"
-              >
-                Lessons
-              </Link>
-            </div>
-          </div>
-        </section>
       </div>
     </main>
   );
@@ -435,14 +431,7 @@ function KpiCard({
       : "from-orange-500/16 via-orange-400/10 to-transparent dark:from-orange-400/14";
 
   return (
-    <div
-      className="
-        relative overflow-hidden rounded-3xl
-        border border-black/10 dark:border-white/10
-        bg-white dark:bg-zinc-900/50
-        shadow-sm
-      "
-    >
+    <div className="relative overflow-hidden rounded-3xl border border-black/10 dark:border-white/10 bg-white dark:bg-zinc-900/50 shadow-sm">
       <div className={`absolute inset-0 bg-gradient-to-br ${toneBg}`} />
       <div className="relative p-6">
         <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">{title}</p>
@@ -467,15 +456,12 @@ function RowLink({
   return (
     <Link
       href={href}
-      className="block rounded-2xl border border-black/10 dark:border-white/10 px-4 py-3
-                 hover:bg-black/5 dark:hover:bg-white/10 transition"
+      className="block rounded-2xl border border-black/10 dark:border-white/10 px-4 py-3 hover:bg-black/5 dark:hover:bg-white/10 transition"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">{left}</p>
-          {meta ? (
-            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 truncate">{meta}</p>
-          ) : null}
+          {meta ? <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 truncate">{meta}</p> : null}
         </div>
         <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{right}</div>
       </div>
