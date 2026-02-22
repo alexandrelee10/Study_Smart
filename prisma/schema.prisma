@@ -93,6 +93,10 @@ model User {
 
   stripeCustomerId String?
 
+  passwordHash        String?
+  resetTokenHash      String?
+  resetTokenExpiresAt DateTime?
+
 
   role      Role     @default(STUDENT)
   createdAt DateTime @default(now())

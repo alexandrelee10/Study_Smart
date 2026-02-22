@@ -6,10 +6,12 @@ import owlLogo from "@/public/owl.png";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation"
 
 const LoginForm = () => {
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -135,16 +137,16 @@ const LoginForm = () => {
             />
           </div>
 
-          <div className="flex justify-end">
-            <button
-              type="button"
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-              disabled={loading}
-              onClick={() => setError("Forgot password is coming soon 🙂")}
-            >
-              Forgot password?
-            </button>
-          </div>
+<div className="flex justify-end">
+  <button
+    type="button"
+    disabled={loading}
+    onClick={() => router.push("/forgot-password")}
+    className="text-sm text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
+  >
+    Forgot password?
+  </button>
+</div>
 
           <button
             type="submit"
