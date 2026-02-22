@@ -3,7 +3,7 @@ import { prisma } from "@/app/lib/prisma";
 import { requireAdmin } from "@/app/lib/require-admin";
 import SavedToast from "@/app/components/SavedToast";
 
-export const metadata = { title: "Admin | Courses" };
+export const metadata = { title: "Manage Courses" };
 
 export default async function AdminCoursesPage() {
   await requireAdmin();

@@ -13,7 +13,7 @@ import studySession from "@/public/assets/admin/dash/study-session.jpg"
 import courses from "@/public/assets/admin/dash/courses.png"
 import calendarImg from "@/public/assets/admin/dash/calendar-image.png"
 
-export const metadata = { title: "Admin" };
+export const metadata = { title: "Admin Dashboard" };
 
 function startOfDay(d: Date) {
   const x = new Date(d);
