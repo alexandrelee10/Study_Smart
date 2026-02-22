@@ -5,30 +5,49 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-import ThemeToggle from "./ThemeToggle";
 
 const FooterPage = () => {
   const { resolvedTheme } = useTheme();
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
+  const { data: session } = useSession();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const logoSrc =
     mounted && resolvedTheme === "dark"
       ? "/assets/logo/logo_dark.svg"
       : "/assets/logo/logo.svg";
 
-  // ✅ Hide CTA on dashboard routes
+  // hide CTA on dashboard routes
   const isDashboard = pathname.startsWith("/dashboard");
+
+  const products = [
+    {name: "Features", href: "/components/features"},
+    {name: "Pricing", href: "/components/pricing"},
+    {name: "FAQ", href: "/components/faq"}
+  ];
+
+  const company = [
+    {name: "About", href: "/components/about"},
+    {name: "Contact Us", href: "/components/contact"},
+    {name: "Privacy", href: "/components/privacy"},
+    {name: "Terms of Service", href: "/components/terms"},
+  ];
+
+
+  // hide CTA if logged in
+  const isLoggedIn = !!session?.user;
+
+  const showCTA = !isDashboard && !isLoggedIn;
 
   return (
     <footer className="bg-white text-zinc-600 dark:bg-zinc-800 dark:text-white">
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+          
           {/* Brand */}
           <div className="space-y-4">
             <div className="relative h-20 w-70">
@@ -55,13 +74,10 @@ const FooterPage = () => {
               Product
             </h4>
             <ul className="space-y-2 text-sm">
-              {["Dashboard", "Features", "Pricing", "FAQ"].map((item) => (
-                <li key={item}>
-                  <Link
-                    href="#"
-                    className="hover:text-zinc-900 dark:hover:text-white"
-                  >
-                    {item}
+              {products.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="hover:text-zinc-900 dark:hover:text-white">
+                    {item.name}
                   </Link>
                 </li>
               ))}
@@ -74,21 +90,18 @@ const FooterPage = () => {
               Company
             </h4>
             <ul className="space-y-2 text-sm">
-              {["About", "Contact", "Privacy", "Terms"].map((item) => (
-                <li key={item}>
-                  <Link
-                    href="#"
-                    className="hover:text-zinc-900 dark:hover:text-white"
-                  >
-                    {item}
+              {company.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="hover:text-zinc-900 dark:hover:text-white">
+                    {item.name}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* CTA (hidden on dashboard) */}
-          {!isDashboard && (
+          {/* CTA (ONLY when not logged in + not dashboard) */}
+          {showCTA && (
             <div className="space-y-4">
               <h4 className="text-zinc-900 font-semibold dark:text-white">
                 Get started
@@ -105,11 +118,6 @@ const FooterPage = () => {
               </Link>
             </div>
           )}
-
-          {/* Theme toggle */}
-          <div className="mx-auto">
-            <ThemeToggle />
-          </div>
         </div>
 
         {/* Bottom bar */}
@@ -118,7 +126,7 @@ const FooterPage = () => {
             © {new Date().getFullYear()} StudySmart. All rights reserved.
           </p>
           <p className="mt-2 sm:mt-0 dark:text-white/80">
-            Built for students 📚
+            Built for students
           </p>
         </div>
       </div>

@@ -4,13 +4,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useSession, signOut } from "next-auth/react";
 
 const NavBar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
-
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -29,11 +28,15 @@ const NavBar = () => {
     };
   }, [mobileOpen]);
 
-  // Logo
-  const { resolvedTheme } = useTheme();
+  // Theme
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  const isDark = mounted && resolvedTheme === "dark";
+  const toggleTheme = () => setTheme(isDark ? "light" : "dark");
+
+  // Logo
   const logoSrc =
     mounted && resolvedTheme === "dark"
       ? "/assets/logo/logo_dark.svg"
@@ -46,22 +49,20 @@ const NavBar = () => {
   const isAdminUser = role === "ADMIN";
   const isAdminMode = isAdminUser && pathname?.startsWith("/admin");
 
-  // ✅ Where logo should go depending on mode
-const isSignedIn = !!session?.user;
+  const isSignedIn = !!session?.user;
 
-// Logo routing 
-const logoHref = !isSignedIn ? "/" : isAdminMode ? "/admin" : "/dashboard";
+  // Logo routing
+  const logoHref = !isSignedIn ? "/" : isAdminMode ? "/admin" : "/dashboard";
 
-  // ✅ Links depend on mode
+  // Links depend on mode
   const links = useMemo(() => {
     if (isAdminMode) {
       return [
-        { name: "Courses", href: "/admin/courses" }, // manage courses
+        { name: "Courses", href: "/admin/courses" },
         { name: "Lessons", href: "/admin/lessons" },
-        { name: "Analytics", href: "/admin/analytics" }, 
+        { name: "Analytics", href: "/admin/analytics" },
       ];
     }
-
     return [
       { name: "Courses", href: "/courses" },
       { name: "Calendar", href: "/calendar" },
@@ -97,7 +98,7 @@ const logoHref = !isSignedIn ? "/" : isAdminMode ? "/admin" : "/dashboard";
     await signOut({ callbackUrl: "/signin?signedOut=1" });
   };
 
-  // ✅ Optional: quick toggle link for admins (switch between dashboards)
+  // Optional: quick toggle link for admins (switch between dashboards)
   const dashboardHref = isAdminMode ? "/dashboard" : "/admin";
   const dashboardLabel = isAdminMode ? "Dashboard" : "Admin";
 
@@ -105,7 +106,7 @@ const logoHref = !isSignedIn ? "/" : isAdminMode ? "/admin" : "/dashboard";
     <nav className="fixed top-0 w-full z-50">
       <div className="bg-[#FAFAFA] shadow-md dark:bg-zinc-950/90 dark:backdrop-blur dark:border-b dark:border-white/10">
         <div className="max-w-6xl mx-auto h-20 px-4 sm:px-8 lg:px-10 flex items-center justify-between gap-6">
-          {/* ✅ Logo (routes to admin dashboard if in admin mode) */}
+          {/* Logo */}
           <Link href={logoHref} className="relative w-60 h-24">
             <Image
               src={logoSrc}
@@ -139,7 +140,7 @@ const logoHref = !isSignedIn ? "/" : isAdminMode ? "/admin" : "/dashboard";
               })}
             </ul>
 
-            {/* ✅ Admin can switch modes */}
+            {/* Admin can switch modes */}
             {isAdminUser ? (
               <Link
                 href={dashboardHref}
@@ -197,7 +198,6 @@ const logoHref = !isSignedIn ? "/" : isAdminMode ? "/admin" : "/dashboard";
                       </p>
                     </div>
 
-                    {/* Dashboard */}
                     <Link
                       href="/dashboard"
                       className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
@@ -208,17 +208,16 @@ const logoHref = !isSignedIn ? "/" : isAdminMode ? "/admin" : "/dashboard";
                       Dashboard
                     </Link>
 
-                    {/* Billing */}
                     <Link
                       href="/billing"
                       className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
-                                dark:text-zinc-100 dark:hover:bg-white/10"
+                                 dark:text-zinc-100 dark:hover:bg-white/10"
                       onClick={() => setProfileOpen(false)}
                       role="menuitem"
                     >
                       Billing
                     </Link>
-                    {/* Settings */}
+
                     <Link
                       href="/settings"
                       className="block px-4 py-3 text-sm text-zinc-800 hover:bg-black/5 transition
@@ -228,6 +227,30 @@ const logoHref = !isSignedIn ? "/" : isAdminMode ? "/admin" : "/dashboard";
                     >
                       Settings
                     </Link>
+
+                    {/* ✅ Theme switch INSIDE dropdown */}
+                    <button
+                      type="button"
+                      onClick={toggleTheme}
+                      className="w-full flex items-center justify-between px-4 py-3 text-sm
+                                 text-zinc-800 hover:bg-black/5 transition
+                                 dark:text-zinc-100 dark:hover:bg-white/10"
+                      role="menuitem"
+                    >
+                      <span className="flex items-center gap-2">
+                        {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                        Theme
+                      </span>
+
+                      {/* little pill showing state */}
+                      <span className="text-xs font-semibold rounded-full px-2 py-1
+                                       bg-zinc-100 text-zinc-800
+                                       dark:bg-white/10 dark:text-zinc-100">
+                        {mounted ? (isDark ? "Dark" : "Light") : "…"}
+                      </span>
+                    </button>
+
+                    <div className="h-px bg-black/10 dark:bg-white/10" />
 
                     <button
                       type="button"
@@ -344,18 +367,37 @@ const logoHref = !isSignedIn ? "/" : isAdminMode ? "/admin" : "/dashboard";
                   </div>
                 </div>
 
-                {/* ✅ Admin mode switch (mobile) */}
+                {/* Admin mode switch (mobile) */}
                 {isAdminUser ? (
                   <Link
                     href={dashboardHref}
                     onClick={() => setMobileOpen(false)}
-                    className="mb-4 flex items-center justify-center rounded-xl border border-black/10 px-4 py-3 text-sm font-medium
+                    className="mb-3 flex items-center justify-center rounded-xl border border-black/10 px-4 py-3 text-sm font-medium
                                hover:bg-black/5 transition
                                dark:border-white/10 dark:hover:bg-white/10"
                   >
                     {dashboardLabel}
                   </Link>
                 ) : null}
+
+                {/* ✅ Theme toggle (mobile) */}
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="mb-4 w-full flex items-center justify-between rounded-xl border border-black/10 px-4 py-3 text-sm font-medium
+                             hover:bg-black/5 transition
+                             dark:border-white/10 dark:hover:bg-white/10"
+                >
+                  <span className="flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+                    {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                    Theme
+                  </span>
+                  <span className="text-xs font-semibold rounded-full px-2 py-1
+                                   bg-zinc-100 text-zinc-800
+                                   dark:bg-white/10 dark:text-zinc-100">
+                    {mounted ? (isDark ? "Dark" : "Light") : "…"}
+                  </span>
+                </button>
 
                 {/* Quick links (mobile) */}
                 <div className="mb-4 grid grid-cols-2 gap-2">
