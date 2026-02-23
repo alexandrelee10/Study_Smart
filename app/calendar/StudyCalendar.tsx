@@ -101,7 +101,7 @@ export default function CalendarClient() {
     try {
       const qs = `?from=${monthStart.toISOString()}&to=${monthEnd.toISOString()}`;
       const res = await fetch(`/api/calendar/events${qs}`, { cache: "no-store" });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       setEvents(Array.isArray(data?.events) ? data.events : []);
     } finally {
       setLoading(false);
@@ -141,8 +141,8 @@ export default function CalendarClient() {
       });
 
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        alert(err?.error ?? "Failed to create event");
+        const text = await res.text();
+        alert(`Failed to create event (${res.status}): ${text || "No details"}`);
         return;
       }
 
@@ -157,12 +157,24 @@ export default function CalendarClient() {
     const ok = confirm("Remove this event?");
     if (!ok) return;
 
-    const res = await fetch(`/api/calendar/events/${id}`, { method: "DELETE" });
-    if (!res.ok) {
-      alert("Failed to delete event");
-      return;
+    try {
+      const res = await fetch(`/api/calendar/events/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Delete failed:", res.status, text);
+        alert(`Failed to delete event (${res.status}): ${text || "No details"}`);
+        return;
+      }
+
+      await load();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete event (network error). See console.");
     }
-    await load();
   }
 
   const selectedDay = useMemo(() => {
@@ -181,7 +193,6 @@ export default function CalendarClient() {
     <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
       <div className="mx-auto max-w-6xl px-4 sm:px-8 lg:px-10 pt-24 pb-12">
         <section className="rounded-3xl border border-black/10 dark:border-white/10 bg-white dark:bg-zinc-900/50 shadow-sm overflow-hidden">
-          {/* Page header */}
           <div className="p-6 border-b border-black/10 dark:border-white/10">
             <h1 className="text-2xl sm:text-3xl font-semibold text-zinc-900 dark:text-zinc-100">
               Calendar
@@ -191,10 +202,8 @@ export default function CalendarClient() {
             </p>
           </div>
 
-          {/* Calendar card */}
           <div className="p-5 sm:p-6">
             <div className="rounded-3xl overflow-hidden border border-black/10 dark:border-white/10 bg-white dark:bg-zinc-950/40 shadow-sm">
-              {/* Month header */}
               <div className="relative p-5 sm:p-6">
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-400/40 via-blue-400/35 to-cyan-300/35 dark:from-indigo-500/30 dark:via-blue-400/25 dark:to-cyan-300/25" />
                 <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl" />
@@ -234,7 +243,6 @@ export default function CalendarClient() {
                 </div>
               </div>
 
-              {/* Month body */}
               <div className="p-5 sm:p-6">
                 <div className="grid grid-cols-7 gap-2 text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
@@ -318,7 +326,6 @@ export default function CalendarClient() {
                   })}
                 </div>
 
-                {/* Day drawer */}
                 <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-4">
                   <div className="lg:col-span-7 rounded-3xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 p-4">
                     <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
@@ -327,15 +334,6 @@ export default function CalendarClient() {
                     <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                       {selectedDay ? selectedDay.toLocaleDateString() : "No date selected"}
                     </p>
-
-                    <div className="mt-3 rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-zinc-950/40 p-3">
-                      <p className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
-                        Tip
-                      </p>
-                      <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
-                        Click a day to auto-fill your date. Use the time picker below to dial it in.
-                      </p>
-                    </div>
                   </div>
 
                   <div className="lg:col-span-5 rounded-3xl border border-black/10 dark:border-white/10 bg-white dark:bg-zinc-950/40 p-4">
@@ -393,7 +391,6 @@ export default function CalendarClient() {
             </div>
           </div>
 
-          {/* Add form */}
           <form onSubmit={addEvent} className="p-6 pt-0 grid grid-cols-1 md:grid-cols-12 gap-3">
             <div className="md:col-span-5">
               <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "About | StudySmart",
+  title: "About Us",
   description: "Learn what StudySmart is and why it exists.",
 };
 

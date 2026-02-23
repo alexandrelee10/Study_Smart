@@ -1,6 +1,6 @@
 import React from 'react'
 import StudyCalendar from './StudyCalendar'
-export const metadata = {title: "Study Smart | Calendar"}
+export const metadata = {title: "Calendar"}
 
 const CalendarPage = () => {
   return (

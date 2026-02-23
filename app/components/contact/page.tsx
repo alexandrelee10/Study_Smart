@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact | StudySmart",
+  title: "Contact Us",
   description: "Contact StudySmart support or the team.",
 };
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | StudySmart",
+  title: "Terms of Service",
   description: "Terms of Service for StudySmart.",
 };
 

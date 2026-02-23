@@ -1,65 +1,88 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/app/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth-options";
-import { prisma } from "@/app/lib/prisma";
 
-// GET /api/calendar/events?from=2026-02-01&to=2026-02-29
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
-  const userId = (session?.user as any)?.id as string | undefined;
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
 
-  const url = new URL(req.url);
-  const from = url.searchParams.get("from");
-  const to = url.searchParams.get("to");
+    if (!userId) {
+      return NextResponse.json({ events: [] });
+    }
 
-  const fromDate = from ? new Date(from) : null;
-  const toDate = to ? new Date(to) : null;
+    const { searchParams } = new URL(req.url);
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
 
-  const events = await prisma.calendarEvent.findMany({
-    where: {
-      userId,
-      ...(fromDate && toDate
-        ? { startAt: { gte: fromDate, lt: toDate } }
-        : {}),
-    },
-    orderBy: { startAt: "asc" },
-  });
+    const fromDate = from ? new Date(from) : null;
+    const toDate = to ? new Date(to) : null;
 
-  return NextResponse.json({ events });
+    const where: any = { userId };
+
+    if (fromDate && !Number.isNaN(fromDate.getTime())) {
+      where.startAt = { ...(where.startAt ?? {}), gte: fromDate };
+    }
+    if (toDate && !Number.isNaN(toDate.getTime())) {
+      where.startAt = { ...(where.startAt ?? {}), lt: toDate };
+    }
+
+    const events = await prisma.calendarEvent.findMany({
+      where,
+      orderBy: { startAt: "asc" },
+      select: { id: true, title: true, type: true, startAt: true, courseId: true },
+    });
+
+    return NextResponse.json({
+      events: events.map((e) => ({
+        ...e,
+        startAt: e.startAt.toISOString(),
+      })),
+    });
+  } catch (e: any) {
+    console.error("GET /api/calendar/events error:", e);
+    return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-  const userId = (session?.user as any)?.id as string | undefined;
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
 
-  const body = await req.json().catch(() => null);
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const title = String(body?.title ?? "").trim();
-  const type = String(body?.type ?? "STUDY").trim(); // must match your enum
-  const startAtRaw = String(body?.startAt ?? "").trim();
-  const courseId = body?.courseId ? String(body.courseId) : null;
+    const body = await req.json().catch(() => ({}));
+    const title = String(body?.title ?? "").trim();
+    const type = body?.type ?? "STUDY";
+    const startAt = new Date(body?.startAt);
 
-  if (!title) return NextResponse.json({ error: "Title required" }, { status: 400 });
-  if (!startAtRaw) return NextResponse.json({ error: "startAt required" }, { status: 400 });
+    if (!title) {
+      return NextResponse.json({ error: "Title required" }, { status: 400 });
+    }
+    if (Number.isNaN(startAt.getTime())) {
+      return NextResponse.json({ error: "Invalid startAt" }, { status: 400 });
+    }
 
-  const startAt = new Date(startAtRaw);
-  if (Number.isNaN(startAt.getTime())) {
-    return NextResponse.json({ error: "Invalid startAt" }, { status: 400 });
+    const created = await prisma.calendarEvent.create({
+      data: {
+        title,
+        type,
+        startAt,
+        userId,
+        courseId: body?.courseId ?? null,
+      },
+      select: { id: true, title: true, type: true, startAt: true, courseId: true },
+    });
+
+    return NextResponse.json({
+      event: { ...created, startAt: created.startAt.toISOString() },
+    });
+  } catch (e: any) {
+    console.error("POST /api/calendar/events error:", e);
+    return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
   }
-
-  const created = await prisma.calendarEvent.create({
-    data: {
-      userId,
-      title,
-      type: type as any,
-      startAt,
-      courseId,
-      isRecurring: false,
-    },
-    select: { id: true },
-  });
-
-  return NextResponse.json({ ok: true, id: created.id });
 }

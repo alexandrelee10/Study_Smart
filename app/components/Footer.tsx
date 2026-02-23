@@ -27,7 +27,6 @@ const FooterPage = () => {
   const products = [
     {name: "Features", href: "/components/features"},
     {name: "Pricing", href: "/components/pricing"},
-    {name: "FAQ", href: "/components/faq"}
   ];
 
   const company = [
