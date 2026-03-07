@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FooterPage from "../Footer";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -32,7 +33,7 @@ const plans = [
     name: "Team",
     price: "$19",
     subtitle: "For small groups",
-    features: ["Shared courses", "Group insights", "Admin tools (coming soon)"],
+    features: ["Shared courses", "Group insights", "Admin tools"],
     cta: { label: "Contact us", href: "/components/contact" },
     highlight: false,
   },
@@ -43,9 +44,6 @@ export default function PricingPage() {
     <main className="min-h-screen bg-white text-zinc-800 dark:bg-zinc-900 dark:text-white">
       <section className="mx-auto max-w-6xl px-6 sm:px-8 lg:px-12 pt-28 pb-16">
         <div className="space-y-3">
-          <p className="text-sm font-medium text-zinc-500 dark:text-white/60">
-            Pricing
-          </p>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
             Simple plans. No weird stuff.
           </h1>
@@ -113,11 +111,8 @@ export default function PricingPage() {
             </div>
           ))}
         </div>
-
-        <p className="mt-10 text-sm text-zinc-500 dark:text-white/60">
-          *Pricing is a placeholder — update anytime.
-        </p>
       </section>
+      <FooterPage />
     </main>
   );
 }

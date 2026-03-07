@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import FooterPage from "../Footer";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -56,11 +57,8 @@ export default function PrivacyPage() {
             </p>
           </section>
         </div>
-
-        <p className="mt-12 text-xs text-zinc-500 dark:text-white/50">
-          This is a placeholder policy — update with your real legal terms.
-        </p>
       </section>
+      <FooterPage />
     </main>
   );
 }

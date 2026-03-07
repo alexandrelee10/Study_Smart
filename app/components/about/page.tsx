@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+
+
+import office from "@/public/assets/aboutus/office.png";
+import team from "@/public/assets/aboutus/team.png";
+import FooterPage from "../Footer";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -8,52 +14,78 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-white text-zinc-800 dark:bg-zinc-900 dark:text-white">
+    <main className="bg-white text-zinc-800 dark:bg-zinc-900 dark:text-white">
       <section className="mx-auto max-w-6xl px-6 sm:px-8 lg:px-12 pt-28 pb-16">
-        <div className="space-y-3">
-          <p className="text-sm font-medium text-zinc-500 dark:text-white/60">
-            Company
-          </p>
+        
+        {/* Title */}
+        <div className="pb-12 text-center">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
             About StudySmart
           </h1>
-          <p className="max-w-2xl text-zinc-600 dark:text-white/70">
-            StudySmart is built to help students stay consistent, track progress,
-            and make studying feel less chaotic.
-          </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-950">
-            <h3 className="font-semibold">The mission</h3>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-white/70">
-              Build better habits through simplicity, structure, and momentum.
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-12 sm:px-8">
+
+          {/* Team Image */}
+          <div className="flex justify-center">
+            <Image
+              src={team}
+              alt="StudySmart team"
+              width={600}
+              height={600}
+              className="object-cover rounded-2xl"
+            />
+          </div>
+
+          {/* Team Text */}
+          <div className="flex flex-col justify-center">
+            <h2 className="text-3xl text-center pb-6">Our Team</h2>
+            <p className="text-zinc-600 dark:text-white/70 leading-relaxed">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed dolor
+              cupiditate pariatur consequuntur tempora doloribus laboriosam
+              expedita magnam adipisci beatae nobis fuga aliquam animi eos,
+              unde iusto, nihil vero corporis. Lorem ipsum dolor sit amet,
+              consectetur adipisicing elit. Animi aut doloribus illo rem porro
+              aspernatur et, veritatis necessitatibus ipsum.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-950">
-            <h3 className="font-semibold">The problem</h3>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-white/70">
-              Students get overwhelmed by tools that are either too complex or
-              not focused on studying.
+          {/* Company Text */}
+          <div className="flex flex-col justify-center">
+            <h2 className="text-3xl text-center pb-6">Our Company</h2>
+            <p className="text-zinc-600 dark:text-white/70 leading-relaxed">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed dolor
+              cupiditate pariatur consequuntur tempora doloribus laboriosam
+              expedita magnam adipisci beatae nobis fuga aliquam animi eos,
+              unde iusto, nihil vero corporis. Lorem ipsum dolor sit amet,
+              consectetur adipisicing elit. Animi aut doloribus illo rem porro
+              aspernatur et, veritatis necessitatibus ipsum.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-950">
-            <h3 className="font-semibold">The approach</h3>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-white/70">
-              Keep it clean, keep it motivating, keep it consistent.
-            </p>
+          {/* Office Image */}
+          <div className="flex justify-center">
+            <Image
+              src={office}
+              alt="StudySmart office"
+              width={600}
+              height={600}
+              className="object-cover rounded-2xl"
+            />
           </div>
+
         </div>
 
-        <div className="mt-12 flex gap-3 flex-wrap">
+        {/* Buttons */}
+        <div className="mt-12 flex flex-wrap gap-3">
           <Link
             href="/components/features"
             className="px-5 py-2 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
           >
             Explore features
           </Link>
+
           <Link
             href="/components/contact"
             className="px-5 py-2 rounded-xl border border-zinc-200 hover:border-zinc-300 dark:border-white/10 dark:hover:border-white/20 transition"
@@ -62,6 +94,7 @@ export default function AboutPage() {
           </Link>
         </div>
       </section>
+      <FooterPage />
     </main>
   );
 }

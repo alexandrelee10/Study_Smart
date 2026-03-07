@@ -30,7 +30,7 @@ const FooterPage = () => {
   ];
 
   const company = [
-    {name: "About", href: "/components/about"},
+    {name: "About Us", href: "/components/about"},
     {name: "Contact Us", href: "/components/contact"},
     {name: "Privacy", href: "/components/privacy"},
     {name: "Terms of Service", href: "/components/terms"},

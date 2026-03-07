@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FooterPage from "../Footer"
 
 export const metadata: Metadata = {
   title: "Features",
@@ -10,6 +11,7 @@ const features = [
   {
     title: "Study Streaks",
     desc: "Stay consistent with streak tracking and gentle reminders.",
+    image: <i className="bi bi-fire"></i>
   },
   {
     title: "Progress Tracking",
@@ -38,9 +40,6 @@ export default function FeaturesPage() {
     <main className="min-h-screen bg-white text-zinc-800 dark:bg-zinc-900 dark:text-white">
       <section className="mx-auto max-w-6xl px-6 sm:px-8 lg:px-12 pt-28 pb-16">
         <div className="space-y-3">
-          <p className="text-sm font-medium text-zinc-500 dark:text-white/60">
-            Product
-          </p>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
             Features that keep you consistent
           </h1>
@@ -50,7 +49,7 @@ export default function FeaturesPage() {
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {features.map((f) => (
             <div
               key={f.title}
@@ -81,6 +80,7 @@ export default function FeaturesPage() {
           </Link>
         </div>
       </section>
+      <FooterPage />
     </main>
   );
 }

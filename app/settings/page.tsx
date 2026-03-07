@@ -7,6 +7,7 @@ import { prisma } from "@/app/lib/prisma";
 import FooterPage from "../components/Footer";
 import SettingsClient from "./SettingsClient";
 import ProfileImageUpload from "./ProfileImageUpload";
+import PricingPage from "../components/pricing/page";
 
 export const metadata = { title: "Study Smart | Settings" };
 
@@ -41,7 +42,6 @@ export default async function SettingsPage() {
         </div>
 
         <div className="space-y-6">
-          {/* ✅ Real upload feature */}
           <ProfileImageUpload currentImage={user.image} />
 
           {/* Username/Email/Password settings */}
